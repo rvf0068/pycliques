@@ -11,6 +11,7 @@ def clique_graph(g, cmax=math.inf):
 
     Args:
       g (networkx.classes.graph.Graph): graph
+      cmax ([int]): upper bound accepted for order of clique graph
 
     Returns:
       networkx.classes.graph.Graph: the clique graph of g
