@@ -2,25 +2,20 @@
 pycliques
 =========
 
-This is the documentation of **pycliques**.
+This is the documentation of **pycliques**. This is an extension to
+the library `networkx <https://networkx.github.io/>`_ in order to work
+with the clique graph operator.
 
-.. note::
+A *clique* of a graph is a maximal complete subgraph.  The clique
+graph of a graph is the intersection graph of the set of its cliques.
 
-    This is the main page of your project's `Sphinx`_ documentation.
-    It is formatted in `reStructuredText`_. Add additional pages
-    by creating rst-files in ``docs`` and adding them to the `toctree`_ below.
-    Use then `references`_ in order to link them from this page, e.g.
-    :ref:`authors` and :ref:`changes`.
-
-    It is also possible to refer to the documentation of other Python packages
-    with the `Python domain syntax`_. By default you can reference the
-    documentation of `Sphinx`_, `Python`_, `NumPy`_, `SciPy`_, `matplotlib`_,
-    `Pandas`_, `Scikit-Learn`_. You can add more by extending the
-    ``intersphinx_mapping`` in your Sphinx's ``conf.py``.
-
-    The pretty useful extension `autodoc`_ is activated by default and lets
-    you include documentation from docstrings. Docstrings can be written in
-    `Google style`_ (recommended!), `NumPy style`_ and `classical style`_.
+The clique graph of a graph :math:`G` is denoted as :math:`K(G)`. We can
+define the *iterated clique graphs* as the graphs in the sequence:
+:math:`G`, :math:`K(G)`, :math:`K^{2}(G)=K(K(G))`, etc. A graph is *divergent* if
+the set of orders of the iterated clique graphs is unbounded, and the
+graph is *convergent* if it is not divergent. A major problem in the
+area is, given a graph :math:`G`, deciding whether the graph is convergent
+or divergent.
 
 
 Contents
@@ -31,7 +26,6 @@ Contents
 
    License <license>
    Authors <authors>
-   Changelog <changelog>
    Module Reference <api/modules>
 
 
@@ -41,19 +35,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-.. _toctree: http://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html
-.. _reStructuredText: http://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
-.. _references: http://www.sphinx-doc.org/en/stable/markup/inline.html
-.. _Python domain syntax: http://sphinx-doc.org/domains.html#the-python-domain
-.. _Sphinx: http://www.sphinx-doc.org/
-.. _Python: http://docs.python.org/
-.. _Numpy: http://docs.scipy.org/doc/numpy
-.. _SciPy: http://docs.scipy.org/doc/scipy/reference/
-.. _matplotlib: https://matplotlib.org/contents.html#
-.. _Pandas: http://pandas.pydata.org/pandas-docs/stable
-.. _Scikit-Learn: http://scikit-learn.org/stable
-.. _autodoc: http://www.sphinx-doc.org/en/stable/ext/autodoc.html
-.. _Google style: https://github.com/google/styleguide/blob/gh-pages/pyguide.md#38-comments-and-docstrings
-.. _NumPy style: https://numpydoc.readthedocs.io/en/latest/format.html
-.. _classical style: http://www.sphinx-doc.org/en/stable/domains.html#info-field-lists
