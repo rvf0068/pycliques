@@ -4,6 +4,7 @@ import logging
 from pycliques import __version__
 from pycliques.cliques import clique_graph
 from pycliques.helly import is_helly
+from pycliques.dominated import has_dominated_vertex
 import networkx as nx
 import pkg_resources
 
@@ -93,14 +94,22 @@ def main(args):
     setup_logging(args.loglevel)
     _logger.debug("Starting crazy calculations...")
     calculations = {}
+    further_study = []
     all_graphs = dict_small[args.n]
     total = len(all_graphs)
     _logger.info("There are {} graphs of order {}".format(total, args.n))
     for index in range(total):
         _logger.debug("Considering graph with index {}".format(index))
-        calculations[index] = is_eventually_helly(all_graphs[index])
-    nonhelly = [index for index, result in calculations.items() if not result]
-    print("The indices that deserve further study are {}".format(nonhelly))
+        graph = all_graphs[index]
+        if has_dominated_vertex(graph):
+            calculations[index] = "Dominated vertex"
+        elif is_eventually_helly(graph):
+            calculations[index] = "Eventually Helly"
+        else:
+            calculations[index] = "Unknown so far"
+            further_study.append(index)
+        _logger.debug("Graph {}".format(calculations[index]))
+    print("Indices that deserve further study: {}".format(further_study))
     _logger.info("Script ends here")
 
 
