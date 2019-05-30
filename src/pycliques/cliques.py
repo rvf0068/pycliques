@@ -39,5 +39,3 @@ def clique_graph(g, cmax=math.inf):
     clique_pairs = itert.combinations(cliques, 2)
     K.add_edges_from((c1, c2) for (c1, c2) in clique_pairs if c1 & c2)
     return K
-
-

@@ -11,13 +11,13 @@ def triangles(g):
                 yield [v, u, w]
 
 
-def extended_triangle(g, t):
-    a, b, c = t
-    extt = t
-    extt.extend(nx.common_neighbors(g, a, b))
-    extt.extend(nx.common_neighbors(g, b, c))
-    extt.extend(nx.common_neighbors(g, a, c))
-    return g.subgraph(extt)
+def extended_triangle(graph, triangle):
+    vertex_a, vertex_b, vertex_c = triangle
+    ext_triangle = triangle
+    ext_triangle.extend(nx.common_neighbors(graph, vertex_a, vertex_b))
+    ext_triangle.extend(nx.common_neighbors(graph, vertex_b, vertex_c))
+    ext_triangle.extend(nx.common_neighbors(graph, vertex_a, vertex_c))
+    return graph.subgraph(ext_triangle)
 
 
 def is_cone(g):
