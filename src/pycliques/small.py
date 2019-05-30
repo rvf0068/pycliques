@@ -25,7 +25,7 @@ def parse_args(args):
       :obj:`argparse.Namespace`: command line parameters namespace
     """
     parser = argparse.ArgumentParser(
-        description="Just a Fibonnaci demonstration")
+        description="Clique behavior of small graphs")
     parser.add_argument(
         '--version',
         action='version',
