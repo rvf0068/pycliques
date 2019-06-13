@@ -5,6 +5,7 @@ from pycliques import __version__
 from pycliques.cliques import clique_graph
 from pycliques.helly import is_helly
 from pycliques.dominated import has_dominated_vertex
+from pycliques.induced import induced_octahedra
 import networkx as nx
 import pkg_resources
 
@@ -105,6 +106,8 @@ def main(args):
             calculations[index] = "Dominated vertex"
         elif is_eventually_helly(graph):
             calculations[index] = "Eventually Helly"
+        elif induced_octahedra(graph):
+            calculations[index] = "Induced Octahedra"
         else:
             calculations[index] = "Unknown so far"
             further_study.append(index)
