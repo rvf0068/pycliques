@@ -15,7 +15,16 @@ def _adyacency_f(graph, edges):
         return True
 
 
-def _is_special_octa(graph, clique):
+def _is_clique(graph, clique):
+    for v in graph:
+        if not(v in clique):
+            for w in clique:
+                if not(graph.has_edge(v, w)):
+                    break
+            else:
+                return False
+    else:
+        return True
 
 
 def induced_octahedra(graph):
@@ -24,15 +33,26 @@ def induced_octahedra(graph):
     edges_complement = complement_graph.edges()
     aux_graph.add_nodes_from(edges_complement)
     edges_pairs = itertools.combinations(edges_complement, 2)
-    aux_graph.add_edges_from((e1, e2) for (e1, e2) in edges_pairs if _adyacency_f(complement_graph, (e1, e2)))
-    ite = nx.find_cliques()
+    edges_pairs = [(e1, e2) for (e1, e2) in edges_pairs if _adyacency_f(complement_graph, (e1, e2))]
+    aux_graph.add_edges_from(edges_pairs)
+    cliques_aux = nx.find_cliques(aux_graph)
     while True:
         try:
-            octa = next(ite)
-            if len(octa) >= 3:
-                pass
+            edges_octa = next(cliques_aux)
+            if len(edges_octa) >= 3:
+                vertices_octa = []
+                for edge in edges_octa:
+                    vertices_octa.extend(edge)
+                octa = graph.subgraph(vertices_octa)
+                cliques_octa = nx.find_cliques(octa)
+                while True:
+                    try:
+                        clique_octa = next(cliques_octa)
+                        if _is_clique(graph, clique_octa):
+                            print(octa.nodes, clique_octa)
+                            return True
+                    except StopIteration:
+                        break
         except StopIteration:
             break
-
-    return aux_graph
-    
+    return False
