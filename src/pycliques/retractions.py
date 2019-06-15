@@ -22,19 +22,18 @@ def _extensions(large, small, mapp):
 def retraction2(large, small):
     GM = isomorphism.GraphMatcher(large, small)
     rets = GM.subgraph_isomorphisms_iter()
-    while True:
-        try:
-            ret = next(rets)
-            while len(ret) != len(large):
-                exts = _extensions(large, small, ret)
-                try:
-                    v, w = next(exts)
-                    ret[v] = w
-                except StopIteration:
-                    return False
-            return ret
-        except StopIteration:
-            break
+    try:
+        ret = next(rets)
+        while len(ret) != len(large):
+            exts = _extensions(large, small, ret)
+            try:
+                v, w = next(exts)
+                ret[v] = w
+            except StopIteration:
+                return False
+        return ret
+    except StopIteration:
+        return False
 
 
 def retraction(large, small):
