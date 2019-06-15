@@ -6,21 +6,21 @@ another vertex :math:`w` that..
 import copy
 
 
+def closed_neighborhood(g, v):
+    return set(g[v]) | {v}
+
+
 def is_dominated_vertex(g, v):
-    verts = g.nodes()
-    neighsv = set(g[v]) | {v}
-    for u in verts:
+    for u in g:
         if u != v:
-            neighsu = set(g[u]) | {u}
-            if neighsv.issubset(neighsu):
+            if closed_neighborhood(g, v).issubset(closed_neighborhood(g, u)):
                 return True
     else:
         return False
 
 
 def has_dominated_vertex(g):
-    verts = g.nodes()
-    for v in verts:
+    for v in g:
         if is_dominated_vertex(g, v):
             return [v]
     else:
