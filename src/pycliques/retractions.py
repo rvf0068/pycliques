@@ -2,6 +2,14 @@ from networkx.algorithms import isomorphism
 from pycliques.dominated import closed_neighborhood
 
 
+def is_map(domain, codomain, ismap):
+    for e in domain.edges():
+        if not(codomain.has_edge(ismap[e[0]], ismap[e[1]])):
+            return False
+    else:
+        return True
+
+
 def retraction(large, small):
     GM = isomorphism.GraphMatcher(large, small)
     rets = GM.subgraph_isomorphisms_iter()
