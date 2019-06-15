@@ -67,11 +67,12 @@ def setup_logging(loglevel):
 graph6c = pkg_resources.resource_filename('pycliques', '/data/graph6c.g6')
 graph7c = pkg_resources.resource_filename('pycliques', '/data/graph7c.g6')
 graph8c = pkg_resources.resource_filename('pycliques', '/data/graph8c.g6')
-graph9c = pkg_resources.resource_filename('pycliques', '/data/graph9c.g6')
+# graph9c = pkg_resources.resource_filename('pycliques', '/data/graph9c.g6')
 list6 = nx.read_graph6(graph6c)
 list7 = nx.read_graph6(graph7c)
 list8 = nx.read_graph6(graph8c)
 # list9 = nx.read_graph6(graph9c)
+# dict_small = {6: list6, 7: list7, 8: list8, 9: list9}
 dict_small = {6: list6, 7: list7, 8: list8}
 
 
@@ -82,6 +83,7 @@ def is_eventually_helly(g):
         g = clique_graph(g, 30)
         if g is None:
             return False
+    print("Helly of index {}".format(i))
     return True
 
 
