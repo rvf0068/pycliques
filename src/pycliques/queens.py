@@ -27,3 +27,15 @@ def queens(num=8, state=()):
                 for result in queens(num, state + (pos,)):
                     print("yielding {}".format((pos,)+result))
                     yield (pos,) + result
+
+
+def sequences(num=8, state=()):
+    for pos in [0, 1]:
+        print("Trying {}".format(pos))
+        if len(state) == num-1:
+            print("Hello! State: {}. Yielding: {}".format(state, (pos,)))
+            yield (pos,)
+        else:
+            for result in sequences(num, state + (pos,)):
+                print("yielding {}".format((pos,)+result))
+                yield (pos,) + result

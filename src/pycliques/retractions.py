@@ -15,6 +15,8 @@ def pk(graph):
 
 
 suspc5 = list7[822]
+suspc5 = list7[822]
+suspc5 = list7[822]
 g = list8[11045]
 kg = pk(g)
 k2g = pk(kg)
@@ -22,12 +24,17 @@ k2gl = nx.convert_node_labels_to_integers(k2g)
 o4 = list8[11112]
 retracts_to_suspc5 = list8[7901]
 almost_retraction = {0: 0, 3: 2, 4: 3, 1: 1, 5: 4, 6: 5, 7: 6}
+octa = nx.Graph()
+octa.add_edges_from([("a", "b"), ("c", "d"), ("e", "f")])
+octa = nx.complement(octa)
+c4 = nx.cycle_graph(4)
 
 
 def is_map(domain, codomain, ismap):
     for e in domain.edges():
-        if not(codomain.has_edge(ismap[e[0]], ismap[e[1]])):
-            return False
+        if e[0] in ismap and e[1] in ismap:
+            if not(codomain.has_edge(ismap[e[0]], ismap[e[1]])):
+                return False
     else:
         return True
 
@@ -148,9 +155,52 @@ def complete_retraction(large, small, ret):
     if len(remaining) == 1:
         for w in _extension_of_map(large, small, ret, v):
             print("w={}".format(w))
-            yield (w,)
+            yield w
     else:
-        for result in _extension_of_map(large, small, ret, v):
-            ret[v] = w
-            complete_retraction(large, small,copy.deepcopy(ret))
+        for result in complete_retraction(large, small, ret):
+            result[v] = w
+            yield result
 
+
+def ya_retraction(large, small, ret):
+    remaining = list(large.nodes()-ret.keys())
+    print("remaining={}", remaining)
+    for v in remaining:
+        for w in _extension_of_map(large, small, ret, v):
+            print("Trying v={}, w={}".format(v, w))
+            if len(ret) == len(large)-1:
+                print("Hello! ret: {}. Yielding: {}".format(ret, (w,)))
+                yield (w,)
+            else:
+                myret = copy.deepcopy(ret)
+                myret[v] = w
+                for result in ya_retraction(large, myret):
+                    
+                    print("yielding {}".format((pos,)+result))
+                    yield (pos,) + result
+
+def yield_extend_retraction(large, small, ret):
+    if len(ret) == len(large):
+        print("Hello")
+        yield ret
+    else:
+        v = list(large.nodes()-ret.keys())[0]
+        print("Finding image of vertex {}".format(v))
+        possible = _extension_of_map(large, small, ret, v)
+        print("Possible images are {}".format(possible))
+        for w in possible:
+            ret2 = copy.deepcopy(ret)
+            ret2[v] = w
+            print("Map is now {}".format(ret2))
+            extend_retraction(large, small, ret2)
+            print("len large={}, len ret={}".format(len(large), len(ret2)))
+
+
+def conflict_retraction(large, small, ret, state, nextw):
+    pass
+
+
+def retraction_as_tuple(large, small, ret, state=()):
+    remaining = tuple(large.nodes()-ret.keys())
+    for pos in remaining:
+        pass
