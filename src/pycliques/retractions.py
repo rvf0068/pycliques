@@ -33,7 +33,11 @@ c4 = nx.cycle_graph(4)
 def is_map(domain, codomain, ismap):
     for e in domain.edges():
         if e[0] in ismap and e[1] in ismap:
-            if not(codomain.has_edge(ismap[e[0]], ismap[e[1]])):
+            w1 = ismap[e[0]]
+            w2 = ismap[e[1]]
+            if not(codomain.has_edge(w1, w2)) and w1 != w2:
+                print("{} is an edge in domain".format(e))
+                print("but {} {} is not an edge in codomain".format(w1, w2))
                 return False
     else:
         return True
@@ -70,7 +74,9 @@ def retraction(large, small):
 def _extension_of_map(large, small, mapp, v):
     common = set(small.nodes())
     for w in large[v] & mapp.keys():
+        print("w is now {}".format(w))
         common = common & closed_neighborhood(small, mapp[w])
+        print("common is now {}".format(common))
     return common
 
 
@@ -210,10 +216,14 @@ def dict_to_tuple(the_dict):
     return tuple((a, b) for a, b in the_dict.items())
 
 
+def invert_dict(the_dict):
+    return dict((b, a) for a, b in the_dict.items())
+
+
 def sa_retraction(large, small, state):
     ret = dict(state)
     remaining = list(large.nodes()-ret.keys())
-    print("remaining={}", remaining)
+    print("remaining = {}".format(remaining))
     for v in remaining:
         for w in _extension_of_map(large, small, ret, v):
             print("Trying v={}, w={}".format(v, w))
