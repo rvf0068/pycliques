@@ -175,9 +175,9 @@ def ya_retraction(large, small, ret):
                 myret = copy.deepcopy(ret)
                 myret[v] = w
                 for result in ya_retraction(large, myret):
-                    
                     print("yielding {}".format((pos,)+result))
                     yield (pos,) + result
+
 
 def yield_extend_retraction(large, small, ret):
     if len(ret) == len(large):
@@ -204,3 +204,23 @@ def retraction_as_tuple(large, small, ret, state=()):
     remaining = tuple(large.nodes()-ret.keys())
     for pos in remaining:
         pass
+
+    
+def dict_to_tuple(the_dict):
+    return tuple((a, b) for a, b in the_dict.items())
+
+
+def sa_retraction(large, small, state):
+    ret = dict(state)
+    remaining = list(large.nodes()-ret.keys())
+    print("remaining={}", remaining)
+    for v in remaining:
+        for w in _extension_of_map(large, small, ret, v):
+            print("Trying v={}, w={}".format(v, w))
+            if len(ret) == len(large)-1:
+                print("Hello! ret: {}. Yielding: {}".format(ret, (v, w)))
+                yield ((v, w),)
+            else:
+                for result in sa_retraction(large, small, state+((v, w),)):
+                    print("yielding {}".format(((v, w),)+result))
+                    yield ((v, w),)+result
