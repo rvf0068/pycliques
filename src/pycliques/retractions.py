@@ -51,10 +51,13 @@ def retraction(large, small):
     GM = isomorphism.GraphMatcher(large, small)
     rets = GM.subgraph_isomorphisms_iter()
     for ret in rets:
-        state = dict_to_tuple(ret)
-        extension = _extend_retraction(large, small, state)
-        for ext in extension:
-            yield (dict(state+ext), invert_dict(ret))
+        if large.order() == small.order():
+            yield (ret, invert_dict(ret))
+        else:
+            state = dict_to_tuple(ret)
+            extension = _extend_retraction(large, small, state)
+            for ext in extension:
+                yield (dict(state+ext), invert_dict(ret))
 
 
 def retracts(large, small):
