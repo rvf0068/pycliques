@@ -136,9 +136,8 @@ def main(args):
     further = []
     all_graphs = dict_small[args.n]
     index = 0
-    with open(all_graphs) as graph_file:
-        graph = graph_file.readline()
-        while graph != '':
+    with open(all_graphs, 'r') as graph_file:
+        for graph in graph_file:
             graph = graph.strip()
             graph = nx.from_graph6_bytes(bytes(graph, 'utf8'))
             _logger.debug("Considering graph with index {}".format(index))
@@ -160,7 +159,6 @@ def main(args):
                 calculations[index] = "has character unknown so far"
                 further.append(index)
             _logger.debug("This graph {}".format(calculations[index]))
-            graph = graph_file.readline()
             index = index + 1
     print("Indices that deserve further study: {}".format(further))
     _logger.info("Script ends here")
