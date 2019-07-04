@@ -4,8 +4,10 @@ import logging
 from pycliques import __version__
 from pycliques.cliques import clique_graph
 from pycliques.helly import is_helly
-from pycliques.dominated import has_dominated_vertex
+from pycliques.dominated import has_dominated_vertex, completely_pared_graph
 from pycliques.induced import induced_octahedra
+from pycliques.retractions import retracts
+from pycliques.named import suspension_of_cycle
 import networkx as nx
 import pkg_resources
 
@@ -67,13 +69,18 @@ def setup_logging(loglevel):
 graph6c = pkg_resources.resource_filename('pycliques', '/data/graph6c.g6')
 graph7c = pkg_resources.resource_filename('pycliques', '/data/graph7c.g6')
 graph8c = pkg_resources.resource_filename('pycliques', '/data/graph8c.g6')
-# graph9c = pkg_resources.resource_filename('pycliques', '/data/graph9c.g6')
+graph9c = pkg_resources.resource_filename('pycliques', '/data/graph9c.g6')
 list6 = nx.read_graph6(graph6c)
 list7 = nx.read_graph6(graph7c)
 list8 = nx.read_graph6(graph8c)
-# list9 = nx.read_graph6(graph9c)
-# dict_small = {6: list6, 7: list7, 8: list8, 9: list9}
-dict_small = {6: list6, 7: list7, 8: list8}
+list9 = nx.read_graph6(graph9c)
+dict_small = {6: list6, 7: list7, 8: list8, 9: list9}
+# dict_small = {6: list6, 7: list7, 8: list8}
+
+suspc5 = list7[822]
+suspc6 = list8[9675]
+snubd = list8[10829]
+compc8 = list8[11082]
 
 
 def is_eventually_helly(g):
@@ -83,8 +90,45 @@ def is_eventually_helly(g):
         g = clique_graph(g, 30)
         if g is None:
             return False
+        else:
+            g = completely_pared_graph(g)
     print("Helly of index {}".format(i))
     return True
+
+
+def eventually_retracts_specially(g):
+    i = 0
+    while not induced_octahedra(g) and i < 8:
+        i = i+1
+        g = clique_graph(g, 20)
+        if g is None:
+            return False
+        else:
+            g = completely_pared_graph(g)
+    print("Index {} has induced special octahedra".format(i))
+    return True
+
+
+def retracts_to(h):
+    return lambda g: retracts(g, h)
+
+
+def retracts_to_suspension_of_cycle(n):
+    return lambda g: retracts(g, suspension_of_cycle(n))
+
+
+retracts_to_suspc5 = retracts_to(suspc5)
+retracts_to_suspc6 = retracts_to(suspc6)
+retracts_to_compc8 = retracts_to(compc8)
+retracts_to_snubd = retracts_to(snubd)
+
+
+def retracts_to_some_suspension(g, indices):
+    for n in indices:
+        if retracts(g, suspension_of_cycle(n)):
+            return n
+    else:
+        return False
 
 
 def main(args):
@@ -110,6 +154,14 @@ def main(args):
             calculations[index] = "Eventually Helly"
         elif induced_octahedra(graph):
             calculations[index] = "Induced Octahedra"
+        elif retracts_to_suspc5(graph):
+            calculations[index] = "Retracts to Susp(C_5)"
+        elif retracts_to_suspc6(graph):
+            calculations[index] = "Retracts to Susp(C_6)"
+        elif retracts_to_compc8(graph):
+            calculations[index] = "Retracts to Comp(C_8)"
+        elif eventually_retracts_specially(graph):
+            calculations[index] = "Eventually has a special octahedron"
         else:
             calculations[index] = "Unknown so far"
             further_study.append(index)
