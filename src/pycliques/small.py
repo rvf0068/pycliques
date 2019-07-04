@@ -1,6 +1,11 @@
 import argparse
 import sys
 import logging
+import pkg_resources
+
+import networkx as nx
+from networkx.algorithms.operators.unary import complement
+
 from pycliques import __version__
 from pycliques.cliques import clique_graph
 from pycliques.helly import is_helly
@@ -8,8 +13,6 @@ from pycliques.dominated import has_dominated_vertex, completely_pared_graph
 from pycliques.induced import induced_octahedra
 from pycliques.retractions import retracts
 from pycliques.named import suspension_of_cycle
-import networkx as nx
-import pkg_resources
 
 __author__ = "Rafael Villarroel"
 __copyright__ = "Rafael Villarroel"
@@ -70,17 +73,7 @@ graph6c = pkg_resources.resource_filename('pycliques', '/data/graph6c.g6')
 graph7c = pkg_resources.resource_filename('pycliques', '/data/graph7c.g6')
 graph8c = pkg_resources.resource_filename('pycliques', '/data/graph8c.g6')
 graph9c = pkg_resources.resource_filename('pycliques', '/data/graph9c.g6')
-list6 = nx.read_graph6(graph6c)
-list7 = nx.read_graph6(graph7c)
-list8 = nx.read_graph6(graph8c)
-list9 = nx.read_graph6(graph9c)
-dict_small = {6: list6, 7: list7, 8: list8, 9: list9}
-# dict_small = {6: list6, 7: list7, 8: list8}
-
-suspc5 = list7[822]
-suspc6 = list8[9675]
-snubd = list8[10829]
-compc8 = list8[11082]
+dict_small = {6: graph6c, 7: graph7c, 8: graph8c, 9: graph9c}
 
 
 def is_eventually_helly(g):
@@ -117,10 +110,9 @@ def retracts_to_suspension_of_cycle(n):
     return lambda g: retracts(g, suspension_of_cycle(n))
 
 
-retracts_to_suspc5 = retracts_to(suspc5)
-retracts_to_suspc6 = retracts_to(suspc6)
-retracts_to_compc8 = retracts_to(compc8)
-retracts_to_snubd = retracts_to(snubd)
+retracts_to_suspc5 = retracts_to(suspension_of_cycle(5))
+retracts_to_suspc6 = retracts_to(suspension_of_cycle(6))
+retracts_to_compc8 = retracts_to(complement(nx.cycle_graph(8)))
 
 
 def retracts_to_some_suspension(g, indices):
@@ -141,32 +133,36 @@ def main(args):
     setup_logging(args.loglevel)
     _logger.debug("Starting crazy calculations...")
     calculations = {}
-    further_study = []
+    further = []
     all_graphs = dict_small[args.n]
-    total = len(all_graphs)
-    _logger.info("There are {} graphs of order {}".format(total, args.n))
-    for index in range(total):
-        _logger.debug("Considering graph with index {}".format(index))
-        graph = all_graphs[index]
-        if has_dominated_vertex(graph):
-            calculations[index] = "Dominated vertex"
-        elif is_eventually_helly(graph):
-            calculations[index] = "Eventually Helly"
-        elif induced_octahedra(graph):
-            calculations[index] = "Induced Octahedra"
-        elif retracts_to_suspc5(graph):
-            calculations[index] = "Retracts to Susp(C_5)"
-        elif retracts_to_suspc6(graph):
-            calculations[index] = "Retracts to Susp(C_6)"
-        elif retracts_to_compc8(graph):
-            calculations[index] = "Retracts to Comp(C_8)"
-        elif eventually_retracts_specially(graph):
-            calculations[index] = "Eventually has a special octahedron"
-        else:
-            calculations[index] = "Unknown so far"
-            further_study.append(index)
-        _logger.debug("Graph {}".format(calculations[index]))
-    print("Indices that deserve further study: {}".format(further_study))
+    index = 0
+    with open(all_graphs) as graph_file:
+        graph = graph_file.readline()
+        while graph != '':
+            graph = graph.strip()
+            graph = nx.from_graph6_bytes(bytes(graph, 'utf8'))
+            _logger.debug("Considering graph with index {}".format(index))
+            if has_dominated_vertex(graph):
+                calculations[index] = "has a dominated vertex"
+            elif is_eventually_helly(graph):
+                calculations[index] = "is eventually Helly"
+            elif induced_octahedra(graph):
+                calculations[index] = "has an induced special octahedron"
+            elif retracts_to_suspc5(graph):
+                calculations[index] = "retracts to Susp(C_5)"
+            elif retracts_to_suspc6(graph):
+                calculations[index] = "retracts to Susp(C_6)"
+            elif retracts_to_compc8(graph):
+                calculations[index] = "retracts to Comp(C_8)"
+            elif eventually_retracts_specially(graph):
+                calculations[index] = "eventually has a special octahedron"
+            else:
+                calculations[index] = "has character unknown so far"
+                further.append(index)
+            _logger.debug("This graph {}".format(calculations[index]))
+            graph = graph_file.readline()
+            index = index + 1
+    print("Indices that deserve further study: {}".format(further))
     _logger.info("Script ends here")
 
 
