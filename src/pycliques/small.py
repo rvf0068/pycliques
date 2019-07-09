@@ -12,7 +12,7 @@ from pycliques.helly import is_helly
 from pycliques.dominated import has_dominated_vertex, completely_pared_graph
 from pycliques.induced import induced_octahedra
 from pycliques.retractions import retracts
-from pycliques.named import suspension_of_cycle
+from pycliques.named import suspension_of_cycle, complement_of_cycle
 from pycliques.lists import _dict_small
 
 
@@ -107,7 +107,7 @@ def retracts_to_suspension_of_cycle(n):
 
 retracts_to_suspc5 = retracts_to(suspension_of_cycle(5))
 retracts_to_suspc6 = retracts_to(suspension_of_cycle(6))
-retracts_to_compc8 = retracts_to(complement(nx.cycle_graph(8)))
+retracts_to_compc8 = retracts_to(complement_of_cycle(8))
 
 
 def retracts_to_some_suspension(g, indices):
@@ -120,7 +120,7 @@ def retracts_to_some_suspension(g, indices):
 
 def retracts_to_some_complement_of_cycle(g, indices):
     for n in indices:
-        if retracts(g, complement(nx.cycle_graph(n))):
+        if retracts(g, complement_of_cycle(n)):
             return n
     else:
         return False

@@ -5,6 +5,7 @@ This file defines some graphs.
 
 import networkx as nx
 from networkx.algorithms.operators.binary import disjoint_union
+from networkx.algorithms.operators.unary import complement
 
 
 def graph_join(g, h):
@@ -20,6 +21,19 @@ def graph_suspension(g):
 
 def suspension_of_cycle(n):
     return graph_suspension(nx.cycle_graph(n))
+
+
+def complement_of_cycle(n):
+    return complement(nx.cycle_graph(n))
+
+
+def octahedron(n):
+    edges = []
+    aux_graph = nx.Graph()
+    for i in range(n):
+        edges.append((2*i, 2*i+1))
+    aux_graph.add_edges_from(edges)
+    return complement(aux_graph)
 
 
 octa = nx.octahedral_graph()
