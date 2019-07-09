@@ -1,7 +1,6 @@
 import argparse
 import sys
 import logging
-import pkg_resources
 import gzip
 
 import networkx as nx
@@ -14,6 +13,8 @@ from pycliques.dominated import has_dominated_vertex, completely_pared_graph
 from pycliques.induced import induced_octahedra
 from pycliques.retractions import retracts
 from pycliques.named import suspension_of_cycle
+from pycliques.lists import _dict_small
+
 
 __author__ = "Rafael Villarroel"
 __copyright__ = "Rafael Villarroel"
@@ -68,14 +69,6 @@ def setup_logging(loglevel):
     logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
     logging.basicConfig(level=loglevel, stream=sys.stdout,
                         format=logformat, datefmt="%Y-%m-%d %H:%M:%S")
-
-
-graph6c = pkg_resources.resource_filename('pycliques', '/data/graph6c.g6.gz')
-graph7c = pkg_resources.resource_filename('pycliques', '/data/graph7c.g6.gz')
-graph8c = pkg_resources.resource_filename('pycliques', '/data/graph8c.g6.gz')
-graph9c = pkg_resources.resource_filename('pycliques', '/data/graph9c.g6.gz')
-graph10c = pkg_resources.resource_filename('pycliques', '/data/graph10c.g6.gz')
-dict_small = {6: graph6c, 7: graph7c, 8: graph8c, 9: graph9c, 10: graph10c}
 
 
 def is_eventually_helly(g):
@@ -136,7 +129,7 @@ def main(args):
     _logger.debug("Starting crazy calculations...")
     calculations = {}
     further = []
-    all_graphs = dict_small[args.n]
+    all_graphs = _dict_small[args.n]
     index = 0
     with gzip.open(all_graphs, 'rt') as graph_file:
         for graph in graph_file:
