@@ -131,7 +131,11 @@ def main(args):
     graph = nx.convert_node_labels_to_integers(graph)
     _logger.info("This graph has order {}".format(graph.order()))
     _logger.info("Searching for octahedra")
-    induced_octahedra(graph)
+    has_induced = induced_octahedra(graph)
+    if has_induced:
+        print("Found it!")
+    else:
+        print("Sorry, could not find it!")
     _logger.info("Script ends here")
 
 
