@@ -118,6 +118,14 @@ def retracts_to_some_suspension(g, indices):
         return False
 
 
+def retracts_to_some_complement_of_cycle(g, indices):
+    for n in indices:
+        if retracts(g, complement(nx.cycle_graph(n))):
+            return n
+    else:
+        return False
+
+
 def main(args):
     """Main entry point allowing external calls
 
