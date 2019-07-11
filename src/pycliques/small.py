@@ -110,7 +110,7 @@ retracts_to_suspc6 = retracts_to(suspension_of_cycle(6))
 retracts_to_compc8 = retracts_to(complement_of_cycle(8))
 
 
-def retracts_to_some_suspension(g, indices):
+def retracts_to_some_suspension_of_cycle(g, indices):
     for n in indices:
         if retracts(g, suspension_of_cycle(n)):
             return n
