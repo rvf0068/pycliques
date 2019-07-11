@@ -9,6 +9,8 @@ import sys
 
 from pycliques import __version__
 from pycliques.cliques import clique_graph
+from pycliques.dominated import completely_pared_graph
+
 
 _logger = logging.getLogger(__name__)
 
@@ -127,7 +129,7 @@ def main(args):
     graph = nx.from_graph6_bytes(bytes(args.graph_string, 'utf8'))
     for i in range(index):
         _logger.info("Iterating the clique operator")
-        graph = clique_graph(graph)
+        graph = completely_pared_graph(clique_graph(graph))
     graph = nx.convert_node_labels_to_integers(graph)
     _logger.info("This graph has order {}".format(graph.order()))
     _logger.info("Searching for octahedra")

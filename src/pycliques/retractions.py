@@ -6,7 +6,7 @@ import argparse
 import sys
 
 from pycliques import __version__
-from pycliques.dominated import closed_neighborhood
+from pycliques.dominated import closed_neighborhood, completely_pared_graph
 from pycliques.cliques import clique_graph
 from pycliques.named import suspension_of_cycle, complement_of_cycle, \
     octahedron
@@ -152,7 +152,7 @@ def main(args):
     small = _string_to_graph(args.small)
     for i in range(index):
         _logger.info("Iterating the clique operator")
-        large = clique_graph(large)
+        large = completely_pared_graph(clique_graph(large))
     large = nx.convert_node_labels_to_integers(large)
     _logger.info("The large graph has order {}".format(large.order()))
     _logger.info("Searching for retractions")
