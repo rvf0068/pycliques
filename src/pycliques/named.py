@@ -36,6 +36,4 @@ def octahedron(n):
     return complement(aux_graph)
 
 
-octa = nx.octahedral_graph()
-path5 = nx.path_graph(5)
-cyc3 = nx.cycle_graph(3)
+snub_dysphenoid = nx.from_graph6_bytes(bytes("GQyuzw", 'utf8'))
