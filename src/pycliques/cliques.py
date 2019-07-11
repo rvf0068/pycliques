@@ -20,9 +20,12 @@ def clique_graph(graph, bound=math.inf):
     Returns:
       networkx.classes.graph.Graph: the clique graph of g
 
+    Return type:
+      NetworkX graph
+
     Example:
-      >>> from pycliques.cliques import clique_graph
       >>> import networkx as nx
+      >>> from pycliques.cliques import clique_graph
       >>> g=clique_graph(nx.octahedral_graph())
       >>> g.nodes()
       NodeView((frozenset({0, 1, 2}), frozenset({0, 1, 3}), frozenset({0, 2, 4}), frozenset({0, 3, 4}), frozenset({1, 2, 5}), frozenset({1, 3, 5}), frozenset({2, 4, 5}), frozenset({3, 4, 5})))

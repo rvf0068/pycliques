@@ -40,11 +40,11 @@ def is_helly(g):
       bool: whether g is Helly
 
     Examples:
+      >>> import networkx as nx
       >>> from pycliques.helly import is_helly
-      >>> from pycliques.named import octa, cyc3
-      >>> is_helly(octa)
+      >>> is_helly(nx.octahedral_graph())
       False
-      >>> is_helly(cyc3)
+      >>> is_helly(nx.cycle_graph(3))
       True
     """
     ite = triangles(g)
