@@ -25,7 +25,7 @@ def open_neighborhood(graph, v):
 def is_closed_surface(graph):
     for v in graph:
         on = open_neighborhood(graph, v)
-        if not on.order() > 3 and not is_cycle(on):
+        if on.order() < 4 or not is_cycle(on):
             return False
     else:
         return True
@@ -34,7 +34,7 @@ def is_closed_surface(graph):
 def is_surface(graph):
     for v in graph:
         on = open_neighborhood(graph, v)
-        if not on.order() > 3 and not is_cycle(on) and not is_path(on):
+        if on.order() < 4 or (not is_cycle(on) and not is_path(on)):
             return False
     else:
         return True
