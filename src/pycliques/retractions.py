@@ -105,7 +105,8 @@ def _extend_retraction(large, small, state):
 def retraction(large, small):
     GM = isomorphism.GraphMatcher(large, small)
     rets = GM.subgraph_isomorphisms_iter()
-    autos = list(automorphisms(small))
+    autos_small = list(automorphisms(small))
+    autos_large = list(automorphisms(large))
     repeated = []
     for ret in rets:
         if ret not in repeated:
@@ -117,8 +118,11 @@ def retraction(large, small):
                 extension = _extend_retraction(large, small, state)
                 for ext in extension:
                     yield (dict(state+ext), invert_dict(ret))
-            for auto in autos:
-                new_repeated = dict([(x, auto[ret[x]]) for x in ret])
+            for auto_s in autos_small:
+                new_repeated = dict([(x, auto_s[ret[x]]) for x in ret])
+                repeated.append(new_repeated)
+            for auto_l in autos_large:
+                new_repeated = dict([(auto_l[x], ret[x]) for x in ret])
                 repeated.append(new_repeated)
 
 
