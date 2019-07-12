@@ -4,7 +4,6 @@ import logging
 import gzip
 
 import networkx as nx
-from networkx.algorithms.operators.unary import complement
 
 from pycliques import __version__
 from pycliques.cliques import clique_graph
