@@ -11,6 +11,8 @@ from pycliques.cliques import clique_graph
 from pycliques.named import suspension_of_cycle, complement_of_cycle, \
     octahedron
 from pycliques.utilities import dict_to_tuple, invert_dict
+from pycliques.coaffinations import automorphisms
+
 
 _logger = logging.getLogger(__name__)
 
@@ -103,15 +105,21 @@ def _extend_retraction(large, small, state):
 def retraction(large, small):
     GM = isomorphism.GraphMatcher(large, small)
     rets = GM.subgraph_isomorphisms_iter()
+    autos = list(automorphisms(small))
+    repeated = []
     for ret in rets:
-        if large.order() == small.order():
-            yield (ret, invert_dict(ret))
-        else:
-            state = dict_to_tuple(ret)
-            _logger.info("So far: {}".format(state))
-            extension = _extend_retraction(large, small, state)
-            for ext in extension:
-                yield (dict(state+ext), invert_dict(ret))
+        if ret not in repeated:
+            if large.order() == small.order():
+                yield (ret, invert_dict(ret))
+            else:
+                state = dict_to_tuple(ret)
+                _logger.info("So far: {}".format(state))
+                extension = _extend_retraction(large, small, state)
+                for ext in extension:
+                    yield (dict(state+ext), invert_dict(ret))
+            for auto in autos:
+                new_repeated = dict([(x, auto[ret[x]]) for x in ret])
+                repeated.append(new_repeated)
 
 
 def retracts(large, small):
