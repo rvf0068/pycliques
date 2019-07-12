@@ -3,6 +3,14 @@ import gzip
 from pycliques.lists import _dict_small
 
 
+def dict_to_tuple(the_dict):
+    return tuple((a, b) for a, b in the_dict.items())
+
+
+def invert_dict(the_dict):
+    return dict((b, a) for a, b in the_dict.items())
+
+
 def extract_graphs(the_list, order, the_file):
     index = 0
     translation = {}

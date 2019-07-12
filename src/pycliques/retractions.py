@@ -10,20 +10,12 @@ from pycliques.dominated import closed_neighborhood, completely_pared_graph
 from pycliques.cliques import clique_graph
 from pycliques.named import suspension_of_cycle, complement_of_cycle, \
     octahedron
-
+from pycliques.utilities import dict_to_tuple, invert_dict
 
 _logger = logging.getLogger(__name__)
 
 
-def parse_args(args):
-    """Parse command line parameters
-
-    Args:
-      args ([str]): command line parameters as list of strings
-
-    Returns:
-      :obj:`argparse.Namespace`: command line parameters namespace
-    """
+def _parse_args(args):
     parser = argparse.ArgumentParser(
         description="Retractions to octahedra")
     parser.add_argument(
@@ -56,7 +48,7 @@ def parse_args(args):
     return parser.parse_args(args)
 
 
-def setup_logging(loglevel):
+def _setup_logging(loglevel):
     """Setup basic logging
 
     Args:
@@ -79,28 +71,23 @@ def is_map(domain, codomain, ismap):
 
 
 def _extension_of_map(large, small, mapp, v):
+    """Given the graphs ``large``, ``small``, a (partial) map ``mapp``
+    between them, and a vertex ``v`` of the graph ``large``, this
+    function returns the set of vertices of the graph ``small`` that
+    could be images of ``v`` under ``mapp``.
+    """
     common = set(small.nodes())
     for w in large[v] & mapp.keys():
         common = common & closed_neighborhood(small, mapp[w])
     return common
 
 
-def _first_retraction(large, small):
-    GM = isomorphism.GraphMatcher(large, small)
-    rets = GM.subgraph_isomorphisms_iter()
-    ret = next(rets)
-    return ret
-
-
-def dict_to_tuple(the_dict):
-    return tuple((a, b) for a, b in the_dict.items())
-
-
-def invert_dict(the_dict):
-    return dict((b, a) for a, b in the_dict.items())
-
-
 def _extend_retraction(large, small, state):
+    """We are given the graphs ``large`` and ``small``. Here ``state`` is
+    a tuple of pairs, that defines a (partial) map from ``large`` to
+    ``small``. This function uses backtracking to complete a
+    retraction from ``large`` to ``small``.
+    """
     ret = dict(state)
     remaining = list(large.nodes()-ret.keys())
     _logger.info("Remaining: {}".format(remaining))
@@ -144,10 +131,10 @@ def _string_to_graph(string):
         return octahedron(int(string[1:]))
 
 
-def main(args):
-    args = parse_args(args)
+def _main(args):
+    args = _parse_args(args)
     index = args.n
-    setup_logging(args.loglevel)
+    _setup_logging(args.loglevel)
     large = nx.from_graph6_bytes(bytes(args.large, 'utf8'))
     small = _string_to_graph(args.small)
     for i in range(index):
@@ -167,7 +154,7 @@ def main(args):
 def run():
     """Entry point for console_scripts
     """
-    main(sys.argv[1:])
+    _main(sys.argv[1:])
 
 
 if __name__ == "__main__":
