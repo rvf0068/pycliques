@@ -1,5 +1,7 @@
 import gzip
 
+import networkx as nx
+
 from pycliques.lists import _dict_small
 
 
@@ -21,3 +23,10 @@ def extract_graphs(the_list, order, the_file):
                     translation[index] = graph.strip()
                 index = index+1
             extracted_graphs.write(str(translation))
+
+
+def graph_from_gap_adjacency_list(the_list):
+    graph = nx.Graph()
+    for i, adj in enumerate(the_list):
+        graph.add_edges_from([(i, v-1) for v in adj])
+    return graph
