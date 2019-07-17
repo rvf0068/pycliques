@@ -79,8 +79,11 @@ def is_eventually_helly(g):
             return False
         else:
             g = completely_pared_graph(g)
-    print("Helly of index {}".format(i))
-    return True
+    if is_helly(g):
+        print("Helly of index {}".format(i))
+        return True
+    else:
+        return False
 
 
 def eventually_retracts_specially(g):
