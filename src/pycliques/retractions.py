@@ -132,6 +132,15 @@ def retracts(large, small):
         return False
 
 
+def has_induced(large, small):
+    GM = isomorphism.GraphMatcher(large, small)
+    rets = GM.subgraph_isomorphisms_iter()
+    try:
+        return next(rets)
+    except StopIteration:
+        return False
+
+
 def _string_to_graph(string):
     if string[0:2] == 'sc':
         return suspension_of_cycle(int(string[2:]))
