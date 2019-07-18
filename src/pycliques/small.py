@@ -88,15 +88,18 @@ def is_eventually_helly(g):
 
 def eventually_retracts_specially(g):
     i = 0
-    while not induced_octahedra(g) and i < 8:
+    while i < 8 and not induced_octahedra(g):
         i = i+1
         g = clique_graph(g, 20)
         if g is None:
             return False
         else:
             g = completely_pared_graph(g)
-    print("Index {} has induced special octahedra".format(i))
-    return True
+    if i == 8:
+        return False
+    else:
+        print("Index {} has induced special octahedra".format(i))
+        return True
 
 
 def retracts_to(h):
