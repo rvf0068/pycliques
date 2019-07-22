@@ -10,6 +10,7 @@ import sys
 from pycliques import __version__
 from pycliques.cliques import clique_graph
 from pycliques.dominated import completely_pared_graph
+from pycliques.surfaces import is_regular
 
 
 _logger = logging.getLogger(__name__)
@@ -66,22 +67,27 @@ def _adyacency_f(graph, edges):
     for edge in edges:
         vertices.extend(edge)
     subgraph = graph.subgraph(vertices)
-    for vertex in subgraph.nodes():
-        if subgraph.degree(vertex) != 1:
-            return False
-    else:
-        return True
+    return is_regular(subgraph, 1)
 
 
 def _is_clique(graph, clique):
     for v in graph:
         if not(v in clique):
             for w in clique:
+                # if there is no edge between v, w then the clique
+                # cannot be extended with v, so we check the next
+                # vertex
                 if not(graph.has_edge(v, w)):
                     break
             else:
+                # this happens if there is an edge v,w for every w in
+                # clique, hence clique+{v} is complete, and so clique
+                # is not maximal complete
                 return False
     else:
+        # this happens if every vertex outside clique has been
+        # verified as not a valid extension of clique to a larger
+        # complete
         return True
 
 
