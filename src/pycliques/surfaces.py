@@ -19,7 +19,8 @@ def is_path(graph):
 
 
 def open_neighborhood(graph, v):
-    return graph.subgraph(graph[v])
+    """Return a copy(), otherwise the subgraph is frozen."""
+    return graph.subgraph(graph[v]).copy()
 
 
 def is_closed_surface(graph):
