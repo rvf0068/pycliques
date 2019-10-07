@@ -9,7 +9,7 @@ from pycliques import __version__
 from pycliques.cliques import clique_graph
 from pycliques.helly import is_helly
 from pycliques.dominated import has_dominated_vertex, completely_pared_graph
-from pycliques.induced import induced_octahedra
+from pycliques.special import special_octahedra
 from pycliques.retractions import retracts
 from pycliques.named import suspension_of_cycle, complement_of_cycle
 from pycliques.lists import _dict_small
@@ -22,7 +22,7 @@ __license__ = "mit"
 _logger = logging.getLogger(__name__)
 
 
-def parse_args(args):
+def _parse_args(args):
     """Parse command line parameters
 
     Args:
@@ -59,7 +59,7 @@ def parse_args(args):
     return parser.parse_args(args)
 
 
-def setup_logging(loglevel):
+def _setup_logging(loglevel):
     """Setup basic logging
 
     Args:
@@ -80,7 +80,7 @@ def is_eventually_helly(g):
         else:
             g = completely_pared_graph(g)
     if is_helly(g):
-        print("Helly of index {}".format(i))
+        _logger.info("Helly of index {}".format(i))
         return True
     else:
         return False
@@ -88,7 +88,7 @@ def is_eventually_helly(g):
 
 def eventually_retracts_specially(g):
     i = 0
-    while i < 8 and not induced_octahedra(g):
+    while i < 8 and not special_octahedra(g):
         i = i+1
         g = clique_graph(g, 20)
         if g is None:
@@ -98,7 +98,7 @@ def eventually_retracts_specially(g):
     if i == 8:
         return False
     else:
-        print("Index {} has induced special octahedra".format(i))
+        _logger.info("Index {} has induced special octahedra".format(i))
         return True
 
 
@@ -131,14 +131,14 @@ def retracts_to_some_complement_of_cycle(g, indices):
         return False
 
 
-def main(args):
+def _main(args):
     """Main entry point allowing external calls
 
     Args:
       args ([str]): command line parameter list
     """
-    args = parse_args(args)
-    setup_logging(args.loglevel)
+    args = _parse_args(args)
+    _setup_logging(args.loglevel)
     _logger.debug("Starting crazy calculations...")
     calculations = {}
     further = []
@@ -153,7 +153,7 @@ def main(args):
                 calculations[index] = "has a dominated vertex"
             elif is_eventually_helly(graph):
                 calculations[index] = "is eventually Helly"
-            elif induced_octahedra(graph):
+            elif special_octahedra(graph):
                 calculations[index] = "has an induced special octahedron"
             elif retracts_to_suspc5(graph):
                 calculations[index] = "retracts to Susp(C_5)"
@@ -168,15 +168,15 @@ def main(args):
                 further.append(index)
             _logger.debug("This graph {}".format(calculations[index]))
             index = index + 1
-    print("Indices that deserve further study: {}".format(further))
+    _logger.info("Indices that deserve further study: {}".format(further))
     _logger.info("Script ends here")
 
 
-def run():
+def _run():
     """Entry point for console_scripts
     """
-    main(sys.argv[1:])
+    _main(sys.argv[1:])
 
 
 if __name__ == "__main__":
-    run()
+    _run()

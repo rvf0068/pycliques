@@ -170,11 +170,11 @@ def _main(args):
     _logger.info("Script ends here")
 
 
-def run():
+def _run():
     """Entry point for console_scripts
     """
     _main(sys.argv[1:])
 
 
 if __name__ == "__main__":
-    run()
+    _run()
