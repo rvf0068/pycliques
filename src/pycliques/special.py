@@ -16,7 +16,7 @@ from pycliques.surfaces import is_regular
 _logger = logging.getLogger(__name__)
 
 
-def parse_args(args):
+def _parse_args(args):
     """Parse command line parameters
 
     Args:
@@ -51,7 +51,7 @@ def parse_args(args):
     return parser.parse_args(args)
 
 
-def setup_logging(loglevel):
+def _setup_logging(loglevel):
     """Setup basic logging
 
     Args:
@@ -91,7 +91,7 @@ def _is_clique(graph, clique):
         return True
 
 
-def induced_octahedra(graph):
+def special_octahedra(graph):
     c_graph = complement(graph)
     aux_graph = nx.Graph()
     edges_complement = c_graph.edges()
@@ -118,7 +118,8 @@ def induced_octahedra(graph):
                         clique_octa = next(cliques_octa)
                         _logger.info("Trying complete {}".format(clique_octa))
                         if _is_clique(graph, clique_octa):
-                            print(octa.nodes, clique_octa)
+                            _logger.info("{} {}".format(octa.nodes,
+                                                        clique_octa))
                             return True
                     except StopIteration:
                         break
@@ -128,10 +129,10 @@ def induced_octahedra(graph):
     return False
 
 
-def main(args):
-    args = parse_args(args)
+def _main(args):
+    args = _parse_args(args)
     index = args.n
-    setup_logging(args.loglevel)
+    _setup_logging(args.loglevel)
     graph = nx.from_graph6_bytes(bytes(args.graph_string, 'utf8'))
     for i in range(index):
         _logger.info("Iterating the clique operator")
@@ -139,19 +140,18 @@ def main(args):
     graph = nx.convert_node_labels_to_integers(graph)
     _logger.info("This graph has order {}".format(graph.order()))
     _logger.info("Searching for octahedra")
-    has_induced = induced_octahedra(graph)
-    if has_induced:
-        print("Found it!")
+    if special_octahedra(graph):
+        _logger.info("Found it!")
     else:
-        print("Sorry, could not find it!")
+        _logger.info("Sorry, could not find it!")
     _logger.info("Script ends here")
 
 
-def run():
+def _run():
     """Entry point for console_scripts
     """
-    main(sys.argv[1:])
+    _main(sys.argv[1:])
 
 
 if __name__ == "__main__":
-    run()
+    _run()
