@@ -62,6 +62,31 @@ def _setup_logging(loglevel):
 
 
 def is_map(domain, codomain, ismap):
+    """
+    Determine if a dictionary defines a graph map.
+
+    It is not required that the every vertex in domain has a value
+    determined in ismap.
+
+    Args:
+      domain (networkx.classes.graph.Graph): graph
+      codomain (networkx.classes.graph.Graph): graph
+      ismap ([dict]): map
+
+    Returns:
+      True if ismap defines a graph map, False otherwise.
+
+    Example:
+      >>> import networkx as nx
+      >>> from pycliques.retractions import is_map
+      >>> map = {0:0, 1:1, 2:0, 3:1}
+      >>> is_map(nx.cycle_graph(4), nx.complete_graph(2), map)
+      True
+      >>> map = {0:0, 1:1}
+      >>> is_map(nx.cycle_graph(4), nx.complete_graph(2), map)
+      True
+
+    """
     for e in domain.edges():
         if e[0] in ismap and e[1] in ismap:
             w1 = ismap[e[0]]
@@ -103,6 +128,30 @@ def _extend_retraction(large, small, state):
 
 
 def retraction(large, small):
+    """Generator of retractions from large to small.
+
+    Args:
+      large (networkx.classes.graph.Graph): graph
+      small (networkx.classes.graph.Graph): graph
+
+    Returns:
+      A generator of the retractions from a graph to other.
+
+      A retraction is given as a pair of dictionaries, the first
+      defines a map from large to small and the second defines a
+      a map from the small to the large (this is an inclusion).
+      The composition of the second map with the first has to be
+      the identity.
+
+    Example:
+      >>> import networkx as nx
+      >>> from pycliques.retractions import retraction
+      >>> list(retraction(nx.wheel_graph(4), nx.cycle_graph(4)))
+      []
+      >>> list(retraction(nx.path_graph(3), nx.path_graph(2)))
+      [({0: 0, 1: 1, 2: 0}, {0: 0, 1: 1}), ({0: 0, 1: 1, 2: 1}, {0: 0, 1: 1})]
+
+    """
     GM = isomorphism.GraphMatcher(large, small)
     rets = GM.subgraph_isomorphisms_iter()
     a_small = list(automorphisms(small))
@@ -125,6 +174,25 @@ def retraction(large, small):
 
 
 def retracts(large, small):
+    """Whether the graph large retracts to small
+
+    Args:
+      large (networkx.classes.graph.Graph): graph
+      small (networkx.classes.graph.Graph): graph
+
+    Returns:
+      If there is a retraction from large to small, return it.
+      Otherwise, return False.
+
+   Example:
+      >>> import networkx as nx
+      >>> from pycliques.retractions import retracts
+      >>> retracts(nx.wheel_graph(5), nx.cycle_graph(4))
+      False
+      >>> retracts(nx.path_graph(3), nx.path_graph(2))
+      ({0: 0, 1: 1, 2: 0}, {0: 0, 1: 1})
+
+    """
     try:
         rets = retraction(large, small)
         return next(rets)
@@ -132,7 +200,50 @@ def retracts(large, small):
         return False
 
 
+def retracts_to(subgraph):
+    """Boolean function that gives the retraction to a subgraph
+
+    Args:
+      large (networkx.classes.graph.Graph): graph
+
+    Returns:
+      A boolean function that determines if its argument retracts to
+      subgraph.
+
+    Example:
+      >>> import networkx as nx
+      >>> from pycliques.retractions import retracts_to
+      >>> retracts_to(nx.cycle_graph(4))(nx.wheel_graph(5))
+      False
+      >>> retracts_to(nx.path_graph(2))(nx.path_graph(3))
+      ({0: 0, 1: 1, 2: 0}, {0: 0, 1: 1})
+
+    """
+    return lambda g: retracts(g, subgraph)
+
+
 def has_induced(large, small):
+    """Whether the graph large has an induced subgraph isomorphic to small
+
+    Args:
+      large (networkx.classes.graph.Graph): graph
+      small (networkx.classes.graph.Graph): graph
+
+    Returns:
+      If large has a subgraph induced isomorphic to small, return the first
+      inyective map from small to large found. Otherwise, return False.
+
+      The map gives a correspondence from vertices in the large to small.
+
+    Example:
+      >>> import networkx as nx
+      >>> from pycliques.retractions import has_induced
+      >>> has_induced(nx.wheel_graph(5), nx.cycle_graph(4))
+      {1: 0, 2: 1, 3: 2, 4: 3}
+      >>> has_induced(nx.complete_graph(4), nx.cycle_graph(4))
+      False
+
+    """
     GM = isomorphism.GraphMatcher(large, small)
     rets = GM.subgraph_isomorphisms_iter()
     try:
