@@ -10,7 +10,7 @@ from pycliques.cliques import clique_graph
 from pycliques.helly import is_helly
 from pycliques.dominated import has_dominated_vertex, completely_pared_graph
 from pycliques.special import special_octahedra
-from pycliques.retractions import retracts
+from pycliques.retractions import retracts, retracts_to
 from pycliques.named import suspension_of_cycle, complement_of_cycle
 from pycliques.lists import _dict_small
 
@@ -102,19 +102,6 @@ def eventually_retracts_specially(g):
         return True
 
 
-def retracts_to(h):
-    return lambda g: retracts(g, h)
-
-
-def retracts_to_suspension_of_cycle(n):
-    return lambda g: retracts(g, suspension_of_cycle(n))
-
-
-retracts_to_suspc5 = retracts_to(suspension_of_cycle(5))
-retracts_to_suspc6 = retracts_to(suspension_of_cycle(6))
-retracts_to_compc8 = retracts_to(complement_of_cycle(8))
-
-
 def retracts_to_some_suspension_of_cycle(g, indices):
     for n in indices:
         if retracts(g, suspension_of_cycle(n)):
@@ -155,11 +142,11 @@ def _main(args):
                 calculations[index] = "is eventually Helly"
             elif special_octahedra(graph):
                 calculations[index] = "has an induced special octahedron"
-            elif retracts_to_suspc5(graph):
+            elif retracts_to(suspension_of_cycle(5))(graph):
                 calculations[index] = "retracts to Susp(C_5)"
-            elif retracts_to_suspc6(graph):
+            elif retracts_to(suspension_of_cycle(6))(graph):
                 calculations[index] = "retracts to Susp(C_6)"
-            elif retracts_to_compc8(graph):
+            elif retracts_to(complement_of_cycle(8))(graph):
                 calculations[index] = "retracts to Comp(C_8)"
             elif eventually_retracts_specially(graph):
                 calculations[index] = "eventually has a special octahedron"
