@@ -70,32 +70,79 @@ def _setup_logging(loglevel):
                         format=logformat, datefmt="%Y-%m-%d %H:%M:%S")
 
 
-def is_eventually_helly(g):
+def is_eventually_helly(graph, tries=8, bound=30):
+    """Whether the graph is eventually Helly
+
+    Args:
+      graph (networkx.classes.graph.Graph): graph
+      tries : int
+      bound : int
+
+    Returns:
+      True if an iterated clique graph with index less than tries of graph
+      is Helly, in such a way that the order of the iterated clique graphs
+      are never of order greater than bound.
+
+    Example:
+      >>> import networkx as nx
+      >>> from pycliques.helly import is_helly
+      >>> from pycliques.small import is_eventually_helly
+      >>> is_helly(nx.triangular_lattice_graph(3,3))
+      False
+      >>> is_eventually_helly(nx.triangular_lattice_graph(3,3))
+      True
+
+    """
     i = 0
-    while not is_helly(g) and i < 8:
+    while not is_helly(graph) and i < tries:
         i = i+1
-        g = clique_graph(g, 30)
-        if g is None:
+        graph = clique_graph(graph, bound)
+        if graph is None:
             return False
         else:
-            g = completely_pared_graph(g)
-    if is_helly(g):
+            graph = completely_pared_graph(graph)
+    if is_helly(graph):
         _logger.info("Helly of index {}".format(i))
         return True
     else:
         return False
 
 
-def eventually_retracts_specially(g):
+def eventually_retracts_specially(graph, tries=8, bound=20):
+    """Whether the graph eventually retracts specially to an octahedron
+
+    Args:
+      graph (networkx.classes.graph.Graph): graph
+      tries : int
+      bound : int
+
+    Returns:
+      True if an iterated clique graph with index less than tries of graph
+      retracts specially to an octahedron, in such a way that the order of
+      the iterated clique graphs are never of order greater than bound.
+
+    Example:
+      >>> from pycliques.lists import enlist_graphs
+      >>> from pycliques.retractions import retracts
+      >>> from pycliques.named import octahedron
+      >>> from pycliques.small import eventually_retracts_specially
+      >>> g = enlist_graphs(8)[11045]
+      >>> retracts(g, octahedron(3))
+      False
+      >>> eventually_retracts_specially(g)
+      True
+
+    """
+
     i = 0
-    while i < 8 and not special_octahedra(g):
+    while i < tries and not special_octahedra(graph):
         i = i+1
-        g = clique_graph(g, 20)
-        if g is None:
+        graph = clique_graph(graph, bound)
+        if graph is None:
             return False
         else:
-            g = completely_pared_graph(g)
-    if i == 8:
+            graph = completely_pared_graph(graph)
+    if i == tries:
         return False
     else:
         _logger.info("Index {} has induced special octahedra".format(i))
@@ -103,6 +150,8 @@ def eventually_retracts_specially(g):
 
 
 def retracts_to_some_suspension_of_cycle(g, indices):
+    """Whether the graph retracts to some suspension of a cycle"""
+
     for n in indices:
         if retracts(g, suspension_of_cycle(n)):
             return n
@@ -111,6 +160,8 @@ def retracts_to_some_suspension_of_cycle(g, indices):
 
 
 def retracts_to_some_complement_of_cycle(g, indices):
+    """Whether the graph retracts to some complement of a cycle"""
+
     for n in indices:
         if retracts(g, complement_of_cycle(n)):
             return n
