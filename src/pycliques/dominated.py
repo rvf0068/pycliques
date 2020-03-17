@@ -333,7 +333,7 @@ def remove_s_dismantlable_edge(graph):
       >>> g1 = remove_s_dismantlable_edge(nx.complete_graph(3))
       >>> list(g1.edges())
       [(0, 2), (1, 2)]
-      
+
     """
     graph_aux = copy.deepcopy(graph)
     x = has_s_dismantlable_edge(graph)
