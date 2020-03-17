@@ -9,3 +9,7 @@ except DistributionNotFound:
     __version__ = 'unknown'
 finally:
     del get_distribution, DistributionNotFound
+
+__all__ = ["cliques", "coaffinations", "cutpoints", "dominated", "helly",
+           "lists", "named", "retractions", "small", "special", "surfaces",
+           "utilities"]
