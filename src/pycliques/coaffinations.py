@@ -54,3 +54,29 @@ def coaffinations(graph, k):
                 break
         else:
             yield auto
+
+
+def has_coaffinations(graph, k):
+    """Returns whether a graph has coaffinations
+
+    Args:
+      graph (networkx.classes.graph.Graph): graph
+      k ([int]): distance required between each vertex and its image
+
+    Returns:
+      If the graph has coaffinations, return a list which
+      only element is the first coaffination. Otherwise, return False
+
+    Example:
+      >>> from pycliques.coaffinations import has_coaffinations
+      >>> has_coaffinations(nx.path_graph(4), 2)
+      False
+      >>> has_coaffinations(nx.octahedral_graph(), 2)
+      [{5: 0, 4: 1, 3: 2, 2: 3, 1: 4, 0: 5}]
+
+    """
+    try:
+        coaffs = coaffinations(graph, k)
+        return [next(coaffs)]
+    except StopIteration:
+        return False
