@@ -53,7 +53,7 @@ def extended_triangle(graph, triangle):
 
     """
     vertex_a, vertex_b, vertex_c = triangle
-    ext_triangle = triangle
+    ext_triangle = [vertex_a, vertex_b, vertex_c]
     ext_triangle.extend(nx.common_neighbors(graph, vertex_a, vertex_b))
     ext_triangle.extend(nx.common_neighbors(graph, vertex_b, vertex_c))
     ext_triangle.extend(nx.common_neighbors(graph, vertex_a, vertex_c))
