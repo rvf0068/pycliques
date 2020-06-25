@@ -6,109 +6,122 @@ A collection :math:`\mathcal{C}` of subsets of a set :math:`X` is called
 :math:`\mathcal{C}` has non empty intersection. A graph is called *Helly*
 if the collection of its cliques is Helly.
 """
-
-import networkx as nx
-
-
-def triangles(graph):
-    """Generator of the triangles in a graph
-
-    Args:
-      graph (networkx.classes.graph.Graph): graph
-
-    Returns:
-      A generator of the triangles in a graph
-
-    Example:
-      >>> import networkx as nx
-      >>> from pycliques.helly import triangles
-      >>> list(triangles(nx.complete_graph(4)))
-      [[0, 1, 2], [0, 1, 3], [0, 2, 3], [1, 2, 3]]
-
-    """
-    vs = list(graph.nodes())
-    for v in vs:
-        for u in [u for u in graph[v] if vs.index(u) > vs.index(v)]:
-            for w in [w for w in nx.common_neighbors(graph, v, u)
-                      if vs.index(w) > vs.index(u)]:
-                yield [v, u, w]
+from pycliques.dominated import is_dismantlable
 
 
-def extended_triangle(graph, triangle):
-    """The extended triangle of a triangle in a graph
-
-    Args:
-      graph (networkx.classes.graph.Graph): graph
-      triangle : a list of three vertices
-
-    Returns:
-      The subgraph of graph induced by the vertices that are neighbors
-      to at least two vertices in the triangle.
-
-    Example:
-      >>> import networkx as nx
-      >>> from pycliques.helly import extended_triangle
-      >>> extended_triangle(nx.icosahedral_graph(), [0, 1, 5]).nodes()
-      NodeView((0, 1, 5, 6, 8, 11))
-
-    """
-    vertex_a, vertex_b, vertex_c = triangle
-    ext_triangle = [vertex_a, vertex_b, vertex_c]
-    ext_triangle.extend(nx.common_neighbors(graph, vertex_a, vertex_b))
-    ext_triangle.extend(nx.common_neighbors(graph, vertex_b, vertex_c))
-    ext_triangle.extend(nx.common_neighbors(graph, vertex_a, vertex_c))
-    return graph.subgraph(ext_triangle)
+def n_closed(graph, edge):
+    return n_open(graph, edge) | set(edge)
 
 
-def is_cone(graph):
-    """Returns whether the graph is a cone
-
-    Args:
-      graph (networkx.classes.graph.Graph): graph
-
-    Returns:
-      bool: True if there is a vertex in graph that is a neighbor of all
-      other vertices, False otherwise
-
-    Example:
-      >>> import networkx as nx
-      >>> from pycliques.helly import is_cone
-      >>> is_cone(nx.wheel_graph(4))
-      True
-      >>> is_cone(nx.cycle_graph(4))
-      False
-
-    """
-    for v in graph:
-        if graph.degree(v) == graph.order()-1:
-            return True
-    else:
-        return False
+def u_closed(graph, edge):
+    subgraph = graph.subgraph(n_closed(graph, edge))
+    return {v for v in subgraph if subgraph.degree(v) == subgraph.order()-1}
 
 
-def is_helly(g):
+def u_closed_dict(graph):
+    return {edge: u_closed(graph, edge) for edge in graph.edges()}
+
+
+def n_open(graph, edge):
+    return set(graph[edge[0]]) & set(graph[edge[1]])
+
+
+def u_open(graph, edge):
+    subgraph = graph.subgraph(n_open(graph, edge))
+    return {v for v in subgraph if subgraph.degree(v) == subgraph.order()-1}
+
+
+def u_open_dict(graph):
+    return {edge: u_open(graph, edge) for edge in graph.edges()}
+
+
+def is_helly(graph):
     """Checks whether the graph is Helly
 
-    Args:
-      g (networkx.classes.graph.Graph): graph
+    Parameters
+    ----------
+    graph : NetworkX graph
 
-    Returns:
-      bool: True if the graph is Helly, False otherwise
+    Returns
+    -------
+    bool
+       True if the graph is Helly, False otherwise
 
-    Examples:
-      >>> import networkx as nx
-      >>> from pycliques.helly import is_helly
-      >>> is_helly(nx.octahedral_graph())
-      False
-      >>> is_helly(nx.cycle_graph(3))
-      True
+    Notes
+    -----
+    This implementation is from [1]_.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from pycliques.helly import is_helly
+    >>> is_helly(nx.octahedral_graph())
+    False
+    >>> is_helly(nx.cycle_graph(3))
+    True
+
+    References
+    ----------
+    .. [1] Lin, M. C., & Szwarcfiter, J. L., Faster recognition of clique-Helly
+       and hereditary clique-Helly graphs, Information Processing Letters,
+       103(1), 40–43 (2007).
 
     """
-    ite = triangles(g)
-    while True:
-        try:
-            tri = next(ite)
-            if not is_cone(extended_triangle(g, tri)):
+    edges = graph.edges()
+    uclosed = u_closed_dict(graph)
+    for e in edges:
+        for v in n_open(graph, e):
+            gooda = (e[0], v) if (e[0], v) in uclosed else (v, e[0])
+            goodb = (e[1], v) if (e[1], v) in uclosed else (v, e[1])
+            Sc = uclosed[gooda] & uclosed[goodb]
+            if len(Sc & uclosed[e]) == 0:
                 return False
-        except StopIteration:
-            return True
+    return True
+
+
+def is_hereditary_clique_helly(graph):
+    """Checks whether the graph is hereditary clique-Helly
+
+    Parameters
+    ----------
+    graph : NetworkX graph
+
+    Returns
+    -------
+    bool
+       True if the graph is hereditary clique-Helly, False otherwise
+
+    Notes
+    -----
+    This implementation is from [1]_.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from pycliques.helly import is_hereditary_clique_helly
+    >>> is_hereditary_clique_helly(nx.octahedral_graph())
+    False
+    >>> is_hereditary_clique_helly(nx.cycle_graph(3))
+    True
+
+    References
+    ----------
+    .. [1] Lin, M. C., & Szwarcfiter, J. L., Faster recognition of clique-Helly
+       and hereditary clique-Helly graphs, Information Processing Letters,
+       103(1), 40–43 (2007).
+
+    """
+    edges = graph.edges()
+    uopen = u_open_dict(graph)
+    for e in edges:
+        for v in n_open(graph, e):
+            gooda = (e[0], v) if (e[0], v) in uopen else (v, e[0])
+            goodb = (e[1], v) if (e[1], v) in uopen else (v, e[1])
+            if v not in uopen[e] and e[1] not in uopen[gooda] and \
+               e[0] not in uopen[goodb]:
+                return False
+    return True
+
+
+def is_disk_helly(graph):
+    return is_dismantlable(graph) and is_helly(graph)
