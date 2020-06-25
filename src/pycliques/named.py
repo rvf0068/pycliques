@@ -84,12 +84,12 @@ def complement_of_cycle(n):
 
     Examples:
       >>> from pycliques.named import complement_of_cycle
-      >>> from pycliques.helly import is_helly
-      >>> is_helly(complement_of_cycle(6))
+      >>> from pycliques.helly import is_clique_helly
+      >>> is_clique_helly(complement_of_cycle(6))
       True
-      >>> is_helly(complement_of_cycle(7))
+      >>> is_clique_helly(complement_of_cycle(7))
       True
-      >>> is_helly(complement_of_cycle(8))
+      >>> is_clique_helly(complement_of_cycle(8))
       False
 
     """

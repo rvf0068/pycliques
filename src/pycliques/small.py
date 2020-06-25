@@ -7,7 +7,7 @@ import networkx as nx
 
 from pycliques import __version__
 from pycliques.cliques import clique_graph
-from pycliques.helly import is_helly
+from pycliques.helly import is_clique_helly
 from pycliques.dominated import has_dominated_vertex, completely_pared_graph
 from pycliques.special import special_octahedra
 from pycliques.retractions import retracts, retracts_to
@@ -85,23 +85,23 @@ def is_eventually_helly(graph, tries=8, bound=30):
 
     Example:
       >>> import networkx as nx
-      >>> from pycliques.helly import is_helly
+      >>> from pycliques.helly import is_clique_helly
       >>> from pycliques.small import is_eventually_helly
-      >>> is_helly(nx.triangular_lattice_graph(3,3))
+      >>> is_clique_helly(nx.triangular_lattice_graph(3,3))
       False
       >>> is_eventually_helly(nx.triangular_lattice_graph(3,3))
       True
 
     """
     i = 0
-    while not is_helly(graph) and i < tries:
+    while not is_clique_helly(graph) and i < tries:
         i = i+1
         graph = clique_graph(graph, bound)
         if graph is None:
             return False
         else:
             graph = completely_pared_graph(graph)
-    if is_helly(graph):
+    if is_clique_helly(graph):
         _logger.info("Helly of index {}".format(i))
         return True
     else:

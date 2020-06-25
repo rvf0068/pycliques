@@ -35,7 +35,7 @@ def u_open_dict(graph):
     return {edge: u_open(graph, edge) for edge in graph.edges()}
 
 
-def is_helly(graph):
+def is_clique_helly(graph):
     """Checks whether the graph is Helly
 
     Parameters
@@ -54,10 +54,10 @@ def is_helly(graph):
     Examples
     --------
     >>> import networkx as nx
-    >>> from pycliques.helly import is_helly
-    >>> is_helly(nx.octahedral_graph())
+    >>> from pycliques.helly import is_clique_helly
+    >>> is_clique_helly(nx.octahedral_graph())
     False
-    >>> is_helly(nx.cycle_graph(3))
+    >>> is_clique_helly(nx.cycle_graph(3))
     True
 
     References
@@ -124,4 +124,4 @@ def is_hereditary_clique_helly(graph):
 
 
 def is_disk_helly(graph):
-    return is_dismantlable(graph) and is_helly(graph)
+    return is_dismantlable(graph) and is_clique_helly(graph)
