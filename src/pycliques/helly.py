@@ -98,11 +98,15 @@ def is_hereditary_clique_helly(graph):
     Examples
     --------
     >>> import networkx as nx
-    >>> from pycliques.helly import is_hereditary_clique_helly
-    >>> is_hereditary_clique_helly(nx.octahedral_graph())
-    False
-    >>> is_hereditary_clique_helly(nx.cycle_graph(3))
+    >>> from pycliques.helly import is_clique_helly, is_hereditary_clique_helly
+    >>> from pycliques.lists import enlist_graphs
+    >>> is_hereditary_clique_helly(nx.complete_graph(4))
     True
+    >>> g = enlist_graphs(7)[645]
+    >>> is_clique_helly(g)
+    True
+    >>> is_hereditary_clique_helly(g)
+    False
 
     References
     ----------
