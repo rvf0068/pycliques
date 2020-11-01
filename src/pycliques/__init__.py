@@ -10,6 +10,6 @@ except DistributionNotFound:
 finally:
     del get_distribution, DistributionNotFound
 
-__all__ = ["cliques", "coaffinations", "cutpoints", "dominated", "helly",
-           "lists", "named", "pictures", "retractions", "simplicial", "small",
-           "special", "surfaces", "utilities"]
+__all__ = ["cliques", "clockwork", "coaffinations", "cutpoints", "dominated",
+           "helly", "lists", "named", "pictures", "retractions", "simplicial",
+           "small", "special", "surfaces", "utilities"]
