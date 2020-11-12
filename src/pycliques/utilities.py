@@ -2,7 +2,7 @@ import gzip
 
 import networkx as nx
 
-from pycliques.lists import _dict_small
+from pycliques.lists import _dict_connected
 
 
 def dict_to_tuple(the_dict):
@@ -16,7 +16,7 @@ def invert_dict(the_dict):
 def extract_graphs(the_list, order, the_file):
     index = 0
     translation = {}
-    with gzip.open(_dict_small[order], 'rt') as graph_file:
+    with gzip.open(_dict_connected[order], 'rt') as graph_file:
         with open(the_file, 'w') as extracted_graphs:
             for graph in graph_file:
                 if index in the_list:

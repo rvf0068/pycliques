@@ -12,7 +12,7 @@ from pycliques.dominated import has_dominated_vertex, completely_pared_graph
 from pycliques.special import special_octahedra
 from pycliques.retractions import retracts, retracts_to
 from pycliques.named import suspension_of_cycle, complement_of_cycle
-from pycliques.lists import _dict_small
+from pycliques.lists import _dict_connected
 
 
 __author__ = "Rafael Villarroel"
@@ -122,11 +122,11 @@ def eventually_retracts_specially(graph, tries=8, bound=20):
       the iterated clique graphs are never of order greater than bound.
 
     Example:
-      >>> from pycliques.lists import enlist_graphs
+      >>> from pycliques.lists import list_graphs
       >>> from pycliques.retractions import retracts
       >>> from pycliques.named import octahedron
       >>> from pycliques.small import eventually_retracts_specially
-      >>> g = enlist_graphs(8)[11045]
+      >>> g = list_graphs(8)[11045]
       >>> retracts(g, octahedron(3))
       False
       >>> eventually_retracts_specially(g)
@@ -180,7 +180,7 @@ def _main(args):
     _logger.debug("Starting crazy calculations...")
     calculations = {}
     further = []
-    all_graphs = _dict_small[args.n]
+    all_graphs = _dict_connected[args.n]
     index = 0
     with gzip.open(all_graphs, 'rt') as graph_file:
         for graph in graph_file:

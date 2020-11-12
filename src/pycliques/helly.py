@@ -93,16 +93,16 @@ def is_hereditary_clique_helly(graph):
 
     Notes
     -----
-    This implementation is from [1]_.
+    This implementation is from [2]_.
 
     Examples
     --------
     >>> import networkx as nx
     >>> from pycliques.helly import is_clique_helly, is_hereditary_clique_helly
-    >>> from pycliques.lists import enlist_graphs
+    >>> from pycliques.lists import list_graphs
     >>> is_hereditary_clique_helly(nx.complete_graph(4))
     True
-    >>> g = enlist_graphs(7)[645]
+    >>> g = list_graphs(7)[645]
     >>> is_clique_helly(g)
     True
     >>> is_hereditary_clique_helly(g)
@@ -110,7 +110,7 @@ def is_hereditary_clique_helly(graph):
 
     References
     ----------
-    .. [1] Lin, M. C., & Szwarcfiter, J. L., Faster recognition of clique-Helly
+    .. [2] Lin, M. C., & Szwarcfiter, J. L., Faster recognition of clique-Helly
        and hereditary clique-Helly graphs, Information Processing Letters,
        103(1), 40–43 (2007).
 
