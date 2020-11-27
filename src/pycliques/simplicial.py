@@ -87,3 +87,20 @@ def bounded_degree_complex(graph, lambda_vector):
     def _bounded(s):
         return bounded_degree(graph, lambda_vector, s)
     return SimplicialComplex(graph.edges(), function=_bounded)
+
+
+def is_oriented_simplex(digraph):
+    out_ok = False
+    in_ok = False
+    for v in digraph.nodes():
+        if digraph.out_degree(v) == digraph.order()-1:
+            out_ok = True
+        if digraph.in_degree(v) == digraph.order()-1:
+            in_ok = True
+    return out_ok and in_ok
+
+
+def oriented_complex(digraph):
+    def _oriented_simplex(s):
+        return is_oriented_simplex(digraph.subgraph(s))
+    return SimplicialComplex(digraph.nodes(), function=_oriented_simplex)
