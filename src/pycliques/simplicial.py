@@ -1,4 +1,5 @@
 import networkx as nx
+from itertools import chain, combinations
 
 
 class SimplicialComplex(object):
@@ -67,6 +68,31 @@ class SimplicialComplex(object):
         new_vertices = set([y for y in self.vertex_set
                             if y != x and self.function({x, y})])
         return SimplicialComplex(new_vertices, function=_new_function)
+
+    def skeleton(self, n):
+        def _new_function(s):
+            return self.function(s) and len(s) <= n+1
+        return SimplicialComplex(self.vertex_set, function=_new_function)
+
+    def all_simplices(self):
+        all = set([])
+        for facet in self.facet_set:
+            s = list(facet)
+            all = all.union(set(chain.from_iterable(combinations(s, r)
+                                                    for r in range(len(s)+1))))
+        return {frozenset(s) for s in all}
+
+    def dong_matching(self):
+        matched = []
+        vertices = list(self.vertex_set)
+        for vertex in vertices:
+            the_link = self.link(vertex)
+            link_simplices = the_link.all_simplices()
+            for s in link_simplices:
+                if (s not in matched) and (not s | {vertex} in matched):
+                    matched.append(s)
+                    matched.append(s | {vertex})
+        return self.all_simplices() - set(matched)
 
 
 def clique_complex(graph):
