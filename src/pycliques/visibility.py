@@ -11,8 +11,11 @@ def is_visible(y, a, b):
     return isit
 
 
-def visibility_graph(time_series):
-    V = nx.Graph()
+def visibility_graph(time_series, directed=False):
+    if directed:
+        V = nx.DiGraph()
+    else:
+        V = nx.Graph()
     n = len(time_series)
     pairs = itertools.combinations(range(n), 2)
     V.add_edges_from((a, b) for (a, b) in pairs
