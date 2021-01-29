@@ -46,7 +46,7 @@ class SimplicialComplex(object):
 
     def __repr__(self):
         return f"Simplicial complex with vertex_set {self.vertex_set} and facets\
- {self.facet_set}"
+ {self.facet_set}."
 
     def dimension(self):
         d = 0
