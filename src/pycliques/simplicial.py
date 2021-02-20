@@ -1,4 +1,5 @@
 import networkx as nx
+from networkx.algorithms import tournament
 from itertools import chain, combinations
 
 
@@ -116,14 +117,8 @@ def bounded_degree_complex(graph, lambda_vector):
 
 
 def is_oriented_simplex(digraph):
-    out_ok = False
-    in_ok = False
-    for v in digraph.nodes():
-        if digraph.out_degree(v) == digraph.order()-1:
-            out_ok = True
-        if digraph.in_degree(v) == digraph.order()-1:
-            in_ok = True
-    return out_ok and in_ok
+    return nx.is_directed_acyclic_graph(digraph) and \
+        tournament.is_tournament(digraph)
 
 
 def oriented_complex(digraph):
