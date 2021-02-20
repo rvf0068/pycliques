@@ -96,9 +96,26 @@ class SimplicialComplex(object):
         return self.all_simplices() - set(matched)
 
 
+def nerve_of_sets(sets):
+    def _non_empty_intersection(s):
+        list_of_sets = list(s)
+        n = len(list_of_sets)
+        intersect = list_of_sets[0]
+        for i in range(1, n):
+            intersect = intersect.intersection(list_of_sets[i])
+        return len(intersect) != 0
+    vertices = [frozenset(s) for s in sets]
+    return SimplicialComplex(vertices, function=_non_empty_intersection)
+
+
 def clique_complex(graph):
-    the_cliques = set([frozenset(q) for q in nx.find_cliques(graph)])
+    the_cliques = {frozenset(q) for q in nx.find_cliques(graph)}
     return SimplicialComplex(graph.nodes(), facet_set=the_cliques)
+
+
+def nerve_of_cliques(graph):
+    the_cliques = {frozenset(q) for q in nx.find_cliques(graph)}
+    return nerve_of_sets(the_cliques)
 
 
 def bounded_degree(graph, lambda_vector, list_of_edges):
