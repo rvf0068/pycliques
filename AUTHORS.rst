@@ -2,4 +2,4 @@
 Contributors
 ============
 
-* Rafael Villarroel <rvf0068@gmail.com>
+* Rafael Villarroel <rafaelv@uaeh.edu.mx>

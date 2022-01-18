@@ -3,6 +3,7 @@ import itertools
 
 
 def core(segments, neig_segments):
+    """Returns the core graph with segments """
     core = nx.Graph()
     core.add_nodes_from(range(sum(segments)))
     segment_list = []

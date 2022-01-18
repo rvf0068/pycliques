@@ -12,4 +12,4 @@ finally:
 
 __all__ = ["cliques", "clockwork", "coaffinations", "cutpoints", "dominated",
            "helly", "lists", "named", "pictures", "retractions", "simplicial",
-           "small", "special", "surfaces", "utilities"]
+           "small", "special", "surfaces", "utilities", "visibility"]
