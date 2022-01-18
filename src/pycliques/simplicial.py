@@ -50,7 +50,12 @@ class SimplicialComplex(object):
         return f"Simplicial complex with vertex_set {self.vertex_set} and facets\
  {self.facet_set}."
 
+    def __eq__(self, other):
+        return self.vertex_set == other.vertex_set and \
+            self.facet_set == other.facet_set
+
     def dimension(self):
+        """The dimension of the simplicial complex."""
         d = 0
         for facet in self.facet_set:
             if len(facet) > d:
@@ -75,6 +80,18 @@ class SimplicialComplex(object):
         def _new_function(s):
             return self.function(s) and len(s) <= n+1
         return SimplicialComplex(self.vertex_set, function=_new_function)
+
+    def one_skeleton_graph(self):
+        """The 1-skeleton of the complex, but as a graph"""
+        the_graph = nx.Graph()
+        the_graph.add_nodes_from(self.vertex_set)
+        pairs = combinations(self.vertex_set, 2)
+        edges = [(i, j) for (i, j) in pairs if self.function({i, j})]
+        the_graph.add_edges_from(edges)
+        return the_graph
+
+    def is_clique_complex(self):
+        return self == clique_complex(self.one_skeleton_graph())
 
     def all_simplices(self):
         all = set([])
