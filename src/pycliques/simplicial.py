@@ -1,6 +1,7 @@
 import networkx as nx
 from networkx.algorithms import tournament
 from itertools import chain, combinations
+import math
 
 
 class SimplicialComplex(object):
@@ -142,3 +143,12 @@ def oriented_complex(digraph):
     def _oriented_simplex(s):
         return is_oriented_simplex(digraph.subgraph(s))
     return SimplicialComplex(digraph.nodes(), function=_oriented_simplex)
+
+
+def complex_of_forests(graph, max_deg=math.inf):
+    """The complex on the vertices of graph, where the simplices are subsets that induce a forest of maximum degree max_deg"""
+    def _is_forest(s):
+        subgraph = graph.subgraph(s)
+        maxd = max([subgraph.degree(node) for node in subgraph.nodes])
+        return nx.is_forest(graph.subgraph(s)) and maxd <= max_deg
+    return SimplicialComplex(graph.nodes(), function=_is_forest)
