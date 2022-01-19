@@ -1,12 +1,30 @@
 import networkx as nx
 from networkx.algorithms import tournament
 from itertools import chain, combinations
+from functools import reduce
 import math
+
+
+class Simplex(frozenset):
+    """A simplex."""
+    def __new__(cls, elements):
+        return super().__new__(cls, elements)
+
+    def __repr__(self):
+        u = set(self)
+        if len(u) == 0:
+            return "{}"
+        else:
+            return f"{u}"
+
+    def dimension(self):
+        return len(self) - 1
 
 
 class SimplicialComplex(object):
     """A SimplicialComplex is composed of a set of vertices, and a set of
-    frozensets, which are subsets of the set of vertices.
+    simplices (of type Simplex), which correspond to subsets of the set of
+    vertices.
 
     """
     def __init__(self, vertex_set, facet_set=None, function=None):
@@ -22,14 +40,12 @@ class SimplicialComplex(object):
                 return False
 
         def facet_set_from_function(complex):
-            if complex.vertex_set == set():
-                return {frozenset()}
-            elif complex.function(complex.vertex_set):
-                return {frozenset(complex.vertex_set)}
+            if complex.function(complex.vertex_set):
+                return {Simplex(complex.vertex_set)}
             else:
                 x = list(complex.vertex_set)[0]
                 linkmax = facet_set_from_function(complex.link(x))
-                fromlink = {sigma.union({x}) for sigma in linkmax}
+                fromlink = {Simplex(sigma.union({x})) for sigma in linkmax}
                 delmax = facet_set_from_function(complex.deletion(x))
                 fixdelmax = set()
                 for delm in delmax:
@@ -37,7 +53,7 @@ class SimplicialComplex(object):
                         if delm <= linkm:
                             break
                     else:
-                        fixdelmax.add(delm)
+                        fixdelmax.add(Simplex(delm))
                 return fromlink.union(fixdelmax)
 
         if self.function is None:
@@ -45,6 +61,8 @@ class SimplicialComplex(object):
 
         if self.facet_set is None:
             self.facet_set = facet_set_from_function(self)
+        else:
+            self.facet_set = {Simplex(s) for s in self.facet_set}
 
     def __repr__(self):
         return f"Simplicial complex with vertex_set {self.vertex_set} and facets\
@@ -56,10 +74,10 @@ class SimplicialComplex(object):
 
     def dimension(self):
         """The dimension of the simplicial complex."""
-        d = 0
+        d = -1
         for facet in self.facet_set:
-            if len(facet) > d:
-                d = len(facet)
+            if facet.dimension() > d:
+                d = facet.dimension()
         return d
 
     def deletion(self, x):
@@ -72,8 +90,8 @@ class SimplicialComplex(object):
     def link(self, x):
         def _new_function(s):
             return self.function(s | {x})
-        new_vertices = set([y for y in self.vertex_set
-                            if y != x and self.function({x, y})])
+        new_vertices = {y for y in self.vertex_set
+                        if y != x and self.function({x, y})}
         return SimplicialComplex(new_vertices, function=_new_function)
 
     def skeleton(self, n):
@@ -99,7 +117,7 @@ class SimplicialComplex(object):
             s = list(facet)
             all = all.union(set(chain.from_iterable(combinations(s, r)
                                                     for r in range(len(s)+1))))
-        return {frozenset(s) for s in all}
+        return {Simplex(s) for s in all}
 
     def dong_matching(self):
         matched = []
@@ -116,18 +134,14 @@ class SimplicialComplex(object):
 
 def nerve_of_sets(sets):
     def _non_empty_intersection(s):
-        list_of_sets = list(s)
-        n = len(list_of_sets)
-        intersect = list_of_sets[0]
-        for i in range(1, n):
-            intersect = intersect.intersection(list_of_sets[i])
+        intersect = reduce(lambda x, y: x.intersection(y), list(s))
         return len(intersect) != 0
-    vertices = [frozenset(s) for s in sets]
+    vertices = [Simplex(s) for s in sets]
     return SimplicialComplex(vertices, function=_non_empty_intersection)
 
 
 def clique_complex(graph):
-    the_cliques = {frozenset(q) for q in nx.find_cliques(graph)}
+    the_cliques = {Simplex(q) for q in nx.find_cliques(graph)}
     return SimplicialComplex(graph.nodes(), facet_set=the_cliques)
 
 
@@ -163,7 +177,8 @@ def oriented_complex(digraph):
 
 
 def complex_of_forests(graph, max_deg=math.inf):
-    """The complex on the vertices of graph, where the simplices are subsets that induce a forest of maximum degree max_deg"""
+    """The complex on the vertices of graph, where the simplices are subsets
+    that induce a forest of maximum degree max_deg"""
     def _is_forest(s):
         subgraph = graph.subgraph(s)
         maxd = max([subgraph.degree(node) for node in subgraph.nodes])
