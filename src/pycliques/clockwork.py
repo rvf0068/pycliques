@@ -67,5 +67,5 @@ def clockwork_graph(segments, neig_segments, size_seg_crown, permutation):
     the_crown = crown(len(segments), size_seg_crown, permutation)
     return segmented_sum(the_crown, the_core)
 
-# for example, clockwork_graph([1,1,1],[[1],[0],[0]],2,[1,0]) has
+# for example, clockwork_graph([1,1,1], [[1], [0], [0]], 2, [1,0]) has
 # iterated clique graphs with orders increasing by one
