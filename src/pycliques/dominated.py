@@ -32,7 +32,29 @@ def closed_neighborhood(graph, v):
     return set(graph[v]) | {v}
 
 
-def is_dominated_vertex(graph, v):
+def dominates(graph, v, w):
+    """Returns whether vertex v in a graph dominates w
+
+    Parameters
+    ----------
+    graph : nextworkx.classes.graph.Graph
+        graph
+    v : vertex in a graph
+        vertex
+    w : vertex in a graph
+        vertex
+
+    Examples
+    --------
+    FIXME: Add docs.
+
+    """
+    neigh_v = closed_neighborhood(graph, v)
+    neigh_w = closed_neighborhood(graph, w)
+    return neigh_w.issubset(neigh_v)
+
+
+def is_dominated_vertex(graph, v, return_dominator=False):
     """Returns whether a vertex in a graph is dominated
 
     Args:
@@ -53,9 +75,11 @@ def is_dominated_vertex(graph, v):
     """
     for u in graph:
         if u != v:
-            if closed_neighborhood(graph,
-                                   v).issubset(closed_neighborhood(graph, u)):
-                return True
+            if dominates(graph, u, v):
+                if return_dominator:
+                    return (True, u)
+                else:
+                    return True
     else:
         return False
 
@@ -115,6 +139,52 @@ def remove_dominated_vertex(graph):
     else:
         g1.remove_node(x[0])
         return g1
+
+
+def twin_classes(graph):
+    classes = []
+    for vertex in graph.nodes():
+        isit = is_dominated_vertex(graph, vertex, return_dominator=True)
+        if isit:
+            dominator = isit[1]
+            if dominates(graph, vertex, dominator):
+                for aclass in classes:
+                    if dominator in aclass:
+                        if vertex not in aclass:
+                            aclass.append(vertex)
+                        break
+                else:
+                    classes.append([vertex, dominator])
+            else:
+                classes.append([vertex])
+        else:
+            classes.append([vertex])
+    return classes
+
+
+def pared_graph(graph):
+    twins = twin_classes(graph)
+    reps1 = [aclass[0] for aclass in twins if len(aclass) == 1]
+    reps2 = [aclass[0] for aclass in twins if len(aclass) > 1]
+    notdom = [vertex for vertex in reps1 if
+              not is_dominated_vertex(graph, vertex)]
+    notdom.extend(reps2)
+    return graph.subgraph(notdom)
+
+
+def pared_index(graph, return_cp=False):
+    pi = 0
+    g1 = copy.deepcopy(graph)
+    while True:
+        n = g1.order()
+        g1 = pared_graph(g1)
+        if n != g1.order():
+            pi = pi+1
+        else:
+            if return_cp:
+                return (pi, g1)
+            else:
+                return pi
 
 
 def completely_pared_graph(graph):
