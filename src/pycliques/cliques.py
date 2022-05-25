@@ -10,6 +10,21 @@ import itertools
 import math
 
 
+class Clique(frozenset):
+    def __repr__(self):
+        u = set(self)
+        if len(u) == 0:
+            return "{}"
+        else:
+            return f"{u}"
+
+
+class CliqueSup(Clique):
+    def __new__(cls, elements, supergraph):
+        cls.supergraph = supergraph
+        return super().__new__(cls, elements)
+
+
 def clique_graph(graph, bound=math.inf):
     """The clique graph function
 
@@ -28,7 +43,7 @@ def clique_graph(graph, bound=math.inf):
       >>> from pycliques.cliques import clique_graph
       >>> g=clique_graph(nx.octahedral_graph())
       >>> g.nodes()
-      NodeView((frozenset({0, 1, 2}), frozenset({0, 1, 3}), frozenset({0, 2, 4}), frozenset({0, 3, 4}), frozenset({1, 2, 5}), frozenset({1, 3, 5}), frozenset({2, 4, 5}), frozenset({3, 4, 5})))
+      NodeView(({0, 1, 2}, {0, 1, 3}, {0, 2, 4}, {0, 3, 4}, {1, 2, 5}, {1, 3, 5}, {2, 4, 5}, {3, 4, 5}))
 
     """
     it_cliques = nx.find_cliques(graph)
@@ -37,7 +52,7 @@ def clique_graph(graph, bound=math.inf):
     while True:
         try:
             clique = next(it_cliques)
-            cliques.append(frozenset(clique))
+            cliques.append(Clique(clique))
             if len(cliques) > bound:
                 return None
         except StopIteration:
