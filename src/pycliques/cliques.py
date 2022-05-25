@@ -6,6 +6,7 @@ too many vertices.
 """
 
 import networkx as nx
+import numpy as np
 import itertools
 import math
 
@@ -17,12 +18,6 @@ class Clique(frozenset):
             return "{}"
         else:
             return f"{u}"
-
-
-class CliqueSup(Clique):
-    def __new__(cls, elements, supergraph):
-        cls.supergraph = supergraph
-        return super().__new__(cls, elements)
 
 
 def clique_graph(graph, bound=math.inf):
@@ -61,3 +56,12 @@ def clique_graph(graph, bound=math.inf):
     clique_pairs = itertools.combinations(cliques, 2)
     K.add_edges_from((c1, c2) for (c1, c2) in clique_pairs if c1 & c2)
     return K
+
+
+def pos_clique(graph, pos, bound=math.inf):
+    K = clique_graph(graph, bound)
+    posK = dict()
+    if K:
+        for clique in K:
+            posK[clique] = np.mean([pos[x] for x in clique], axis=0)
+        return posK
