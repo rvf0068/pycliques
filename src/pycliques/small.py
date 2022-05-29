@@ -14,13 +14,18 @@ from pycliques.retractions import retracts, retracts_to
 from pycliques.named import suspension_of_cycle, complement_of_cycle
 from pycliques.lists import _dict_connected
 
+from rich.logging import RichHandler
+
+FORMAT = "%(message)s"
+logging.basicConfig(
+    level="NOTSET", format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
+)
 
 __author__ = "Rafael Villarroel"
 __copyright__ = "Rafael Villarroel"
 __license__ = "mit"
 
-_logger = logging.getLogger(__name__)
-
+_logger = logging.getLogger("rich")
 
 def _parse_args(args):
     """Parse command line parameters
