@@ -58,10 +58,9 @@ def clique_graph(graph, bound=math.inf):
     return K
 
 
-def pos_clique(graph, pos, bound=math.inf):
-    K = clique_graph(graph, bound)
+# pos is for the original graph
+def pos_clique(clique_graph, pos, factor=1, bound=math.inf):
     posK = dict()
-    if K:
-        for clique in K:
-            posK[clique] = np.mean([pos[x] for x in clique], axis=0)
-        return posK
+    for clique in clique_graph:
+        posK[clique] = factor*np.mean([pos[x] for x in clique], axis=0)
+    return posK
