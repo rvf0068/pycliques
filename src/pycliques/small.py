@@ -27,6 +27,7 @@ __license__ = "mit"
 
 _logger = logging.getLogger("rich")
 
+
 def _parse_args(args):
     """Parse command line parameters
 
@@ -41,7 +42,7 @@ def _parse_args(args):
     parser.add_argument(
         '--version',
         action='version',
-        version='pycliques {ver}'.format(ver=__version__))
+        version=f'pycliques {__version__}')
     parser.add_argument(
         dest="n",
         help="order of graphs considered",
@@ -76,7 +77,7 @@ def _setup_logging(loglevel):
 
 
 def is_eventually_helly(graph, tries=8, bound=30):
-    """Whether the graph is eventually Helly
+    """Whether `graph` is eventually Helly
 
     Args:
       graph (networkx.classes.graph.Graph): graph
@@ -84,11 +85,11 @@ def is_eventually_helly(graph, tries=8, bound=30):
       bound : int
 
     Returns:
-      True if an iterated clique graph with index less than tries of graph
-      is Helly, in such a way that the order of the iterated clique graphs
-      are never of order greater than bound.
+      True if an iterated clique graph with index less than `tries` of `graph`
+      is Helly, in such a way that the order of an iterated clique graph
+      is never greater than `bound`.
 
-    Example:
+    Examples:
       >>> import networkx as nx
       >>> from pycliques.helly import is_clique_helly
       >>> from pycliques.small import is_eventually_helly
@@ -107,14 +108,14 @@ def is_eventually_helly(graph, tries=8, bound=30):
         else:
             graph = completely_pared_graph(graph)
     if is_clique_helly(graph):
-        _logger.info("Helly of index {}".format(i))
+        _logger.info(f"Helly of index {i}")
         return True
     else:
         return False
 
 
 def eventually_retracts_specially(graph, tries=8, bound=20):
-    """Whether the graph eventually retracts specially to an octahedron
+    """Whether `graph` eventually retracts specially to an octahedron
 
     Args:
       graph (networkx.classes.graph.Graph): graph
@@ -122,9 +123,9 @@ def eventually_retracts_specially(graph, tries=8, bound=20):
       bound : int
 
     Returns:
-      True if an iterated clique graph with index less than tries of graph
+      True if an iterated clique graph of `graph` with index less than `tries`
       retracts specially to an octahedron, in such a way that the order of
-      the iterated clique graphs are never of order greater than bound.
+      all iterated clique graphs is always less than `bound`.
 
     Example:
       >>> from pycliques.lists import list_graphs
