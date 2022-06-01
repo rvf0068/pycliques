@@ -64,3 +64,15 @@ def pos_clique(clique_graph, pos, factor=1, bound=math.inf):
     for clique in clique_graph:
         posK[clique] = factor*np.mean([pos[x] for x in clique], axis=0)
     return posK
+
+
+def homotopy_clique_graph(graph):
+    def _ady(c1, c2):
+        return (c1[0] in c2[1]) and (c2[0] in c2[1])
+    H = nx.Graph()
+    cliques = [Clique(q) for q in nx.find_cliques(graph)]
+    vertices = [(x, q) for x in graph.nodes() for q in cliques]
+    H.add_nodes_from(vertices)
+    vertex_pairs = itertools.combinations(vertices, 2)
+    H.add_edges_from((c1, c2) for (c1, c2) in vertex_pairs if _ady(c1, c2))
+    return H
