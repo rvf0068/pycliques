@@ -8,7 +8,7 @@ import networkx as nx
 from pycliques import __version__
 from pycliques.cliques import clique_graph
 from pycliques.helly import is_clique_helly
-from pycliques.dominated import has_dominated_vertex, completely_pared_graph
+from pycliques.dominated import completely_pared_graph
 from pycliques.special import special_octahedra
 from pycliques.retractions import retracts, retracts_to
 from pycliques.named import suspension_of_cycle, complement_of_cycle
@@ -186,6 +186,8 @@ def _main(args):
     _logger.debug("Starting crazy calculations...")
     calculations = {}
     further = []
+    convergent = []
+    divergent = []
     all_graphs = _dict_connected[args.n]
     index = 0
     with gzip.open(all_graphs, 'rt') as graph_file:
@@ -193,26 +195,33 @@ def _main(args):
             graph = graph.strip()
             graph = nx.from_graph6_bytes(bytes(graph, 'utf8'))
             _logger.debug("Considering graph with index {}".format(index))
-            if has_dominated_vertex(graph):
-                calculations[index] = "has a dominated vertex"
-            elif is_eventually_helly(graph):
+            graph = completely_pared_graph(graph)
+            if is_eventually_helly(graph):
                 calculations[index] = "is eventually Helly"
+                convergent.append(index)
             elif special_octahedra(graph):
                 calculations[index] = "has an induced special octahedron"
+                divergent.append(index)
             elif retracts_to(suspension_of_cycle(5))(graph):
                 calculations[index] = "retracts to Susp(C_5)"
+                divergent.append(index)
             elif retracts_to(suspension_of_cycle(6))(graph):
                 calculations[index] = "retracts to Susp(C_6)"
+                divergent.append(index)
             elif retracts_to(complement_of_cycle(8))(graph):
                 calculations[index] = "retracts to Comp(C_8)"
+                divergent.append(index)
             elif eventually_retracts_specially(graph):
                 calculations[index] = "eventually has a special octahedron"
+                divergent.append(index)
             else:
                 calculations[index] = "has character unknown so far"
                 further.append(index)
-            _logger.debug("This graph {}".format(calculations[index]))
+            _logger.debug(f"This graph {calculations[index]}")
             index = index + 1
-    _logger.info("Indices that deserve further study: {}".format(further))
+    _logger.info(f"Indices that deserve further study: {further}")
+    _logger.info(f"There are {len(convergent)} surely convergent graphs")
+    _logger.info(f"There are {len(divergent)} surely divergent graphs")
     _logger.info("Script ends here")
 
 
