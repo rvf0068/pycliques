@@ -23,6 +23,8 @@ _dict_all = {8: graph8, 9: graph9, 10: graph10}
 _dict_connected = {6: graph6c, 7: graph7c, 8: graph8c, 9: graph9c,
                    10: graph10c}
 
+small_torsion = pkg_resources.resource_filename('pycliques', '/data/small-torsion.g6')
+
 
 def list_graphs(n, connected=True):
     """List of connected graphs of a given order, from B. McKay data
@@ -45,6 +47,16 @@ def list_graphs(n, connected=True):
     else:
         the_dict = _dict_all
     with gzip.open(the_dict[n], 'rt') as graph_file:
+        for graph in graph_file:
+            graph = graph.strip()
+            graph = nx.from_graph6_bytes(bytes(graph, 'utf8'))
+            list_of_graphs.append(graph)
+    return list_of_graphs
+
+
+def small_torsion_graphs():
+    list_of_graphs = []
+    with open(small_torsion, 'r') as graph_file:
         for graph in graph_file:
             graph = graph.strip()
             graph = nx.from_graph6_bytes(bytes(graph, 'utf8'))
