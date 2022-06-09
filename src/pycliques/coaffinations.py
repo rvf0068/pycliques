@@ -7,6 +7,13 @@ A *coaffination* of a graph :math:`G` is an automorphism
 
 import networkx as nx
 from networkx.algorithms import isomorphism
+from pycliques.utilities import invert_dict
+
+
+class CoaffinePair(object):
+    def __init__(self, graph, coaffination):
+        self.graph = graph
+        self.coaffination = coaffination
 
 
 def automorphisms(graph):
@@ -80,3 +87,20 @@ def has_coaffinations(graph, k):
         return [next(coaffs)]
     except StopIteration:
         return False
+
+
+def coaffine_monomorphism(large_pair, small_pair):
+    """Find a coaffine monomorphism from `large_pair` to `small_pair`"""
+    g1 = small_pair.graph
+    g2 = large_pair.graph
+    sigma1 = small_pair.coaffination
+    sigma2 = large_pair.coaffination
+    GM = nx.isomorphism.GraphMatcher(g2, g1)
+    for mono in GM.subgraph_monomorphisms_iter():
+        mono = invert_dict(mono)
+        for x in small_pair.graph:
+            if mono[sigma1[x]] != sigma2[mono[x]]:
+                break
+        else:
+            return mono
+    return False

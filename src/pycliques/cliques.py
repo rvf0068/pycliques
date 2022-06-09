@@ -10,6 +10,7 @@ import numpy as np
 import itertools
 import math
 
+from pycliques.coaffinations import CoaffinePair
 
 class Clique(frozenset):
     def __repr__(self):
@@ -41,6 +42,8 @@ def clique_graph(graph, bound=math.inf):
       NodeView(({0, 1, 2}, {0, 1, 3}, {0, 2, 4}, {0, 3, 4}, {1, 2, 5}, {1, 3, 5}, {2, 4, 5}, {3, 4, 5}))
 
     """
+    if isinstance(graph, CoaffinePair):
+        return _k_coaffine_pair(graph, bound)
     it_cliques = nx.find_cliques(graph)
     cliques = []
     K = nx.Graph()
@@ -56,6 +59,16 @@ def clique_graph(graph, bound=math.inf):
     clique_pairs = itertools.combinations(cliques, 2)
     K.add_edges_from((c1, c2) for (c1, c2) in clique_pairs if c1 & c2)
     return K
+
+
+def _k_coaffine_pair(pair, bound=math.inf):
+    g = pair.graph
+    sigma = pair.coaffination
+    kg = clique_graph(g, bound)
+    coaf_k = dict([])
+    for q in kg:
+        coaf_k[q] = Clique([sigma[x] for x in q])
+    return CoaffinePair(kg, coaf_k)
 
 
 # pos is for the original graph
