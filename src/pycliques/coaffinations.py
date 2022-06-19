@@ -8,6 +8,7 @@ A *coaffination* of a graph :math:`G` is an automorphism
 import networkx as nx
 from networkx.algorithms import isomorphism
 from pycliques.utilities import invert_dict
+from grandiso import find_motifs_iter
 
 
 class CoaffinePair(object):
@@ -89,18 +90,27 @@ def has_coaffinations(graph, k):
         return False
 
 
-def coaffine_monomorphism(large_pair, small_pair):
+def is_coaffine_map(pair1, pair2, dmap):
+    sigma1 = pair1.coaffination
+    sigma2 = pair2.coaffination
+    for x in pair1.graph:
+        if dmap[sigma1[x]] != sigma2[dmap[x]]:
+            return x
+    return True
+
+
+def coaffine_monomorphism(large_pair, small_pair, algorithm="GM"):
     """Find a coaffine monomorphism from `large_pair` to `small_pair`"""
     g1 = small_pair.graph
     g2 = large_pair.graph
-    sigma1 = small_pair.coaffination
-    sigma2 = large_pair.coaffination
-    GM = nx.isomorphism.GraphMatcher(g2, g1)
-    for mono in GM.subgraph_monomorphisms_iter():
-        mono = invert_dict(mono)
-        for x in small_pair.graph:
-            if mono[sigma1[x]] != sigma2[mono[x]]:
-                break
-        else:
+    if algorithm == "GM":
+        GM = nx.isomorphism.GraphMatcher(g2, g1)
+        the_iter = GM.subgraph_monomorphisms_iter()
+    elif algorithm == "Grandiso":
+        the_iter = find_motifs_iter(g1, g2)
+    for mono in the_iter:
+        if algorithm == "GM":
+            mono = invert_dict(mono)
+        if is_coaffine_map(small_pair, large_pair, mono) is True:
             return mono
     return False
