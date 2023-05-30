@@ -119,9 +119,9 @@ class SimplicialComplex(object):
                                                     for r in range(len(s)+1))))
         return {Simplex(s) for s in all}
 
-    def dong_matching(self):
+    def dong_matching(self, order_function=list):
         matched = []
-        vertices = list(self.vertex_set)
+        vertices = order_function(self.vertex_set)
         for vertex in vertices:
             the_link = self.link(vertex)
             link_simplices = the_link.all_simplices()
