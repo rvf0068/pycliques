@@ -81,18 +81,27 @@ class SimplicialComplex(object):
         return d
 
     def deletion(self, x):
-        def _new_function(s):
-            return self.function(s) and x not in s
-
-        new_vertices = self.vertex_set - {x}
-        return SimplicialComplex(new_vertices, function=_new_function)
+        vertices = self.vertex_set - {x}
+        facets = self.facet_set
+        containing = {f for f in facets if x in f}
+        not_containing = facets - containing
+        good_facets = not_containing
+        for s in containing:
+            good = True
+            for f in not_containing:
+                if (s-{x}).issubset(f):
+                    good = False
+                    break
+            if good:
+                good_facets = good_facets.union({s-{x}})
+        return SimplicialComplex(vertices, facet_set=good_facets)
 
     def link(self, x):
-        def _new_function(s):
-            return self.function(s | {x})
-        new_vertices = {y for y in self.vertex_set
-                        if y != x and self.function({x, y})}
-        return SimplicialComplex(new_vertices, function=_new_function)
+        facets = self.facet_set
+        containing = {f for f in facets if x in f}
+        new_facets = {f-{x} for f in containing}
+        vertices = set.union(*(set(s) for s in new_facets))
+        return SimplicialComplex(vertices, facet_set=new_facets)
 
     def skeleton(self, n):
         def _new_function(s):
