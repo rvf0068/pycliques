@@ -100,7 +100,10 @@ class SimplicialComplex(object):
         facets = self.facet_set
         containing = {f for f in facets if x in f}
         new_facets = {f-{x} for f in containing}
-        vertices = set.union(*(set(s) for s in new_facets))
+        if new_facets == {}:
+            vertices = self.vertex_set
+        else:
+            vertices = set.union(*(set(s) for s in new_facets))
         return SimplicialComplex(vertices, facet_set=new_facets)
 
     def skeleton(self, n):
