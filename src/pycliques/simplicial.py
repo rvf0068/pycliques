@@ -43,18 +43,14 @@ class SimplicialComplex(object):
             if complex.function(complex.vertex_set):
                 return {Simplex(complex.vertex_set)}
             else:
-                x = list(complex.vertex_set)[0]
-                linkmax = facet_set_from_function(complex.link(x))
-                fromlink = {Simplex(sigma.union({x})) for sigma in linkmax}
-                delmax = facet_set_from_function(complex.deletion(x))
-                fixdelmax = set()
-                for delm in delmax:
-                    for linkm in linkmax:
-                        if delm <= linkm:
-                            break
-                    else:
-                        fixdelmax.add(Simplex(delm))
-                return fromlink.union(fixdelmax)
+                facets = []
+                all_s = all_subsets(complex.vertex_set)
+                for s in all_s:
+                    if complex.function(s):
+                        containing = [f for f in facets if s.issubset(f)]
+                        if len(containing) == 0:
+                            facets.append(s)
+                return facets
 
         if self.function is None:
             self.function = is_simplex
@@ -139,6 +135,14 @@ class SimplicialComplex(object):
                     matched.append(s)
                     matched.append(s | {vertex})
         return self.all_simplices() - set(matched)
+
+
+def all_subsets(the_set):
+    n = len(the_set)
+    subsets = chain.from_iterable(combinations(the_set, r)
+                                  for r in reversed(range(n+1)))
+    subsets = [frozenset(x) for x in subsets]
+    return subsets
 
 
 def nerve_of_sets(sets):
