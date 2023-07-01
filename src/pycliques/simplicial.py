@@ -50,7 +50,7 @@ class SimplicialComplex(object):
                         containing = [f for f in facets if s.issubset(f)]
                         if len(containing) == 0:
                             facets.append(s)
-                return facets
+                return set(facets)
 
         if self.function is None:
             self.function = is_simplex
@@ -141,7 +141,7 @@ def all_subsets(the_set):
     n = len(the_set)
     subsets = chain.from_iterable(combinations(the_set, r)
                                   for r in reversed(range(1, n+1)))
-    subsets = [frozenset(x) for x in subsets]
+    subsets = [Simplex(x) for x in subsets]
     return subsets
 
 
