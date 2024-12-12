@@ -62,7 +62,7 @@ def _setup_logging(loglevel):
                         format=logformat, datefmt="%Y-%m-%d %H:%M:%S")
 
 
-def _adyacency_f(graph, edges):
+def _adjacency_f(graph, edges):
     vertices = []
     for edge in edges:
         vertices.extend(edge)
@@ -98,7 +98,7 @@ def special_octahedra(graph):
     aux_graph.add_nodes_from(edges_complement)
     _logger.info("The auxiliary graph has order {}".format(aux_graph.order()))
     pairs = itertools.combinations(edges_complement, 2)
-    pairs = [(e1, e2) for (e1, e2) in pairs if _adyacency_f(c_graph, (e1, e2))]
+    pairs = [(e1, e2) for (e1, e2) in pairs if _adjacency_f(c_graph, (e1, e2))]
     aux_graph.add_edges_from(pairs)
     cliques_aux = nx.find_cliques(aux_graph)
     octas = 0
